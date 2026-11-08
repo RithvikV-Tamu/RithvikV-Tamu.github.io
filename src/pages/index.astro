@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Rithvik Vootukur">
+  <main>
+    <h1>Rithvik Vootukur</h1>
+    <p>Aerospace Engineering, Texas A&amp;M University</p>
+    <p class="note">Portfolio under construction.</p>
+  </main>
+</BaseLayout>
+
+<style>
+  main {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 0.02em;
+  }
+
+  p {
+    margin: 0.25rem 0;
+  }
+
+  .note {
+    margin-top: 1.5rem;
+    opacity: 0.6;
+  }
+</style>
