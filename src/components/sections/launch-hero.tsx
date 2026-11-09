@@ -8,11 +8,15 @@ import { cn } from "@/lib/utils"
 
 const FONT_FAMILY = '"Unbounded Variable", "Geist Variable", sans-serif'
 
+const photoBase = `${import.meta.env.BASE_URL}media/photos/`
+const blurUrl = `${photoBase}nebula-carina-blur.webp`
+const depthUrl = `${photoBase}nebula-carina-depth.png`
+
 // Picks the nebula texture size for the shader based on screen width.
 function nebulaUrl() {
   const width = window.innerWidth * Math.min(window.devicePixelRatio || 1, 1.5)
   const size = width <= 1100 ? 1600 : width <= 2200 ? 2560 : 3840
-  return `${import.meta.env.BASE_URL}media/photos/nebula-carina-${size}.webp`
+  return `${photoBase}nebula-carina-${size}.webp`
 }
 
 // Full-screen hero: Webb's "Cosmic Cliffs" nebula with the name drawn into it
@@ -71,6 +75,8 @@ export function LaunchHero() {
           <div className={cn("absolute inset-0 transition-opacity duration-1000", shaderReady ? "opacity-100" : "opacity-0")}>
             <NebulaCanvas
               imageUrl={imageUrl}
+              blurUrl={blurUrl}
+              depthUrl={depthUrl}
               lines={lines}
               fontFamily={FONT_FAMILY}
               reduceMotion={reduceMotion}
