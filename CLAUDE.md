@@ -1,6 +1,6 @@
 # Portfolio site (GitHub Pages)
 
-One-page interactive portfolio. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.io`, served at https://rithvikv-tamu.github.io. Pushing to `main` lints, builds and deploys through `.github/workflows/deploy.yml`.
+One-page interactive portfolio. Public repo `rithvikvootukur/rithvikvootukur.github.io` (owned by my free GitHub organization `rithvikvootukur`; my personal account is `RithvikV-Tamu`), served at https://rithvikvootukur.github.io. The local folder is still named `C:\Projects\RithvikV-Tamu.github.io`. Pushing to `main` lints, builds and deploys through `.github/workflows/deploy.yml`.
 
 ## Stack
 

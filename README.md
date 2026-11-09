@@ -1,6 +1,6 @@
 # Rithvik Vootukur portfolio
 
-One-page interactive portfolio built with Vite, React, TypeScript, Tailwind CSS and shadcn/ui, hosted on GitHub Pages at https://rithvikv-tamu.github.io.
+One-page interactive portfolio built with Vite, React, TypeScript, Tailwind CSS and shadcn/ui, hosted on GitHub Pages at https://rithvikvootukur.github.io.
 
 ## Run locally
 
