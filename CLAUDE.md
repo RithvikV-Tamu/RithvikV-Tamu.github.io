@@ -17,10 +17,10 @@ One-page interactive portfolio. Public repo `rithvikvootukur/rithvikvootukur.git
 
 Visual style: hyper-realistic 4K+ photography, not 3D renders. I rejected a procedural Three.js rocket (kept on local branch `experiment/3d-rocket-hero`) and a pinned scroll launch sequence (too slow to reach the projects). Keep the path to the projects short.
 
-- Hero: one screen. NASA photo of Artemis I on the pad at night; my name sits between the photo and a cutout of the lit rocket, with cursor parallax. A facts strip runs along the bottom. Scrolling slides the photo slower than the page and fades straight into the featured work. No pinned sections.
+- Hero: one screen. Plain-WebGL shader (`src/components/hero/nebula-canvas.tsx`, no Three.js) over Webb's "Cosmic Cliffs" nebula. My name is set in Unbounded and drawn into the shader as a mask, filled with a brightened copy of the nebula, with orange dust in front of the letters. A gravitational-lensing black hole follows the cursor (point-mass lens equation, Einstein ring, accretion glow) and drifts slowly when idle or on touch screens. A static photo with a CSS name shows first and is the fallback without WebGL. A facts strip runs along the bottom; scrolling fades straight into the featured work. No pinned sections.
 - Featured projects: full-width photo panels with parallax, text on a shaded side, and a caption saying the photo is representative and who to credit. Each has a "Try it" card in `src/components/demos/`: TACL beam-through-turbulence illustration (labeled as not a physical model and not RIPTIDE output), SPIRIT CONOPS stepper, and a NACA airfoil explorer using thin airfoil theory (`src/lib/naca.ts`). Demos must stay honest: real math where shown, clear labels where illustrative.
 - Contact: orbital sunrise photo.
-- Credits and sources: `docs/PHOTO_CREDITS.md`. Keep "Not affiliated with NASA" next to NASA credits and the full "ESO/F. Kamphues (CC BY 4.0)" credit on the TACL photo. Ask before downloading new images.
+- Credits and sources: `docs/PHOTO_CREDITS.md`. Keep "Not affiliated with NASA" next to NASA credits, the "NASA, ESA, CSA, STScI (Webb, CC BY 4.0)" credit on the hero, and the full "ESO/F. Kamphues (CC BY 4.0)" credit on the TACL photo. Downloads under 1 GB from trusted sources are fine without asking; report what was downloaded.
 - When editing files from PowerShell, don't use `Get-Content`/`Set-Content` on files with non-ASCII text (Windows PowerShell 5.1 garbles UTF-8 and adds a BOM). Use the editor tools or Node instead.
 
 ## This repo is public
