@@ -9,19 +9,19 @@ import { cn } from "@/lib/utils"
 const FONT_FAMILY = '"Michroma", "Geist Variable", sans-serif'
 
 const photoBase = `${import.meta.env.BASE_URL}media/photos/`
-const blurUrl = `${photoBase}nebula-carina-blur.webp`
-const depthUrl = `${photoBase}nebula-carina-fg.png`
+const blurUrl = `${photoBase}nebula-veil-blur.webp`
 
 // Picks the nebula texture size for the shader based on screen width.
 function nebulaUrl() {
   const width = window.innerWidth * Math.min(window.devicePixelRatio || 1, 1.5)
   const size = width <= 1100 ? 1600 : width <= 2200 ? 2560 : 3840
-  return `${photoBase}nebula-carina-${size}.webp`
+  return `${photoBase}nebula-veil-${size}.webp`
 }
 
-// Full-screen hero: Webb's "Cosmic Cliffs" nebula with the name drawn into it
-// and a small black hole that bends the image around the cursor. A static
-// photo with a CSS name shows first and stays if WebGL is unavailable.
+// Full-screen hero: Hubble's Veil Nebula with the name riding the edge of the
+// bright filament, and a small black hole that bends the image around the
+// cursor. A static photo with a CSS name shows first and stays if WebGL is
+// unavailable.
 export function LaunchHero() {
   const reduceMotion = useReducedMotion() ?? false
   const section = useRef<HTMLElement>(null)
@@ -29,7 +29,8 @@ export function LaunchHero() {
   const [shaderFailed, setShaderFailed] = useState(false)
   const [hintVisible, setHintVisible] = useState(true)
   const [imageUrl] = useState(nebulaUrl)
-  const lines = useMemo(() => profile.name.toUpperCase().split(" "), [])
+  const upperName = useMemo(() => profile.name.toUpperCase(), [])
+  const lines = useMemo(() => upperName.split(" "), [upperName])
   const onReady = useCallback(() => setShaderReady(true), [])
   const onFail = useCallback(() => setShaderFailed(true), [])
 
@@ -55,9 +56,9 @@ export function LaunchHero() {
         {/* Static version: photo plus CSS name. Fades out once the shader is drawing. */}
         <div className={cn("absolute inset-0 transition-opacity duration-1000", showStatic ? "opacity-100" : "opacity-0")} aria-hidden="true">
           <Photo
-            name="nebula-carina"
+            name="nebula-veil"
             alt=""
-            className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-[50%_36%] brightness-[0.82]"
+            className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-[52%_40%] brightness-[0.85]"
             priority
           />
           <div className="absolute inset-x-0 top-[33%] -translate-y-1/2 px-4 text-center sm:top-[30%]">
@@ -76,8 +77,7 @@ export function LaunchHero() {
             <NebulaCanvas
               imageUrl={imageUrl}
               blurUrl={blurUrl}
-              depthUrl={depthUrl}
-              lines={lines}
+              name={upperName}
               fontFamily={FONT_FAMILY}
               reduceMotion={reduceMotion}
               onReady={onReady}
@@ -94,7 +94,7 @@ export function LaunchHero() {
       {shaderReady && !shaderFailed && (
         <p
           className={cn(
-            "pointer-events-none absolute inset-x-0 top-[58%] text-center font-mono text-[11px] tracking-[0.3em] text-white/60 uppercase transition-opacity duration-700 max-lg:hidden",
+            "pointer-events-none absolute top-[18%] left-6 font-mono text-[11px] tracking-[0.3em] text-white/60 uppercase transition-opacity duration-700 max-lg:hidden xl:left-12",
             hintVisible ? "opacity-100" : "opacity-0"
           )}
         >
@@ -128,7 +128,7 @@ export function LaunchHero() {
               <ArrowDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
             </a>
             <p className="text-right font-mono text-[10px] text-white/40">
-              Image: NASA, ESA, CSA, STScI (Webb, CC BY 4.0). Not affiliated with NASA.
+              Image: NASA, ESA, Hubble Heritage Team (ESA/Hubble, CC BY 4.0). Not affiliated with NASA.
             </p>
           </div>
         </div>

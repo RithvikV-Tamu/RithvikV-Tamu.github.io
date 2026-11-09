@@ -1,19 +1,26 @@
 import { useEffect, useRef } from "react"
 
-// Full-screen WebGL view of Webb's "Cosmic Cliffs" nebula in two layers, with
-// the name sitting between them and a small black hole that follows the cursor.
+// Full-screen WebGL view of Hubble's Veil Nebula with the name riding the
+// upper edge of the bright filament, and a small black hole that follows the
+// cursor.
 //
-// Layers: a depth map splits the photo into a far background (starfield) and
-// a near foreground (dust). They slide by different amounts with the pointer
-// (parallax), the foreground casts a soft shadow on the background, and the
-// background is slightly softened (depth of field).
-//
-// Name: solid, light lettering with a short extrusion, bevel lighting and a
-// shadow on the background. It sits behind the foreground dust, but the dust
-// turns mostly see-through over the letters so the name always reads clearly.
+// The name is drawn in image space along a hand-traced line on the filament's
+// edge, so it stays on the edge at any screen size. Depth of field is a smooth
+// focus band along that line: sharp at the name and the edge, gradually
+// mixing toward a blurred copy of the image further away. The letters are
+// solid silver with a short extrusion and bevel, lit from below by the
+// filament's own color. The name drifts a little more than the nebula with
+// the pointer, which places it slightly in front.
 //
 // Black hole: point-mass lens equation. A pixel at distance r shows the scene
 // at r - rE^2 / r, which produces an Einstein ring.
+
+// The filament's upper edge, in image coordinates (0 to 1).
+const EDGE_A: [number, number] = [0.3, 0.56]
+const EDGE_B: [number, number] = [0.7, 0.22]
+// Where the crop centers on small or tall screens.
+const FOCUS: [number, number] = [0.52, 0.4]
+const ZOOM = 0.92
 
 const vertexShader = `
 attribute vec2 aPosition;
@@ -30,33 +37,28 @@ varying vec2 vUv;
 uniform sampler2D uImage;
 uniform sampler2D uText;
 uniform sampler2D uBlur;
-uniform sampler2D uDepth;
 uniform vec2 uRes;
 uniform vec2 uImgSize;
+uniform vec2 uTextSize;
+uniform vec2 uFocus;
+uniform vec2 uLineA;
+uniform vec2 uLineB;
 uniform vec2 uMouse;
 uniform float uStrength;
 uniform float uTime;
 uniform vec2 uTilt;
 
-// uDepth holds the foreground mask: white below the ridge of the dust cliffs.
-const float SPLIT = 0.5;
-
 vec2 coverUv(vec2 uv) {
   float sr = uRes.x / uRes.y;
   float ir = uImgSize.x / uImgSize.y;
-  vec2 scale = (sr > ir ? vec2(1.0, ir / sr) : vec2(sr / ir, 1.0)) * 0.9;
+  vec2 scale = (sr > ir ? vec2(1.0, ir / sr) : vec2(sr / ir, 1.0)) * ${ZOOM.toFixed(2)};
   vec2 half_ = 0.5 * scale;
-  vec2 focus = clamp(vec2(0.5, 0.36), half_, 1.0 - half_);
+  vec2 focus = clamp(uFocus, half_, 1.0 - half_);
   return clamp(focus + (uv - 0.5) * scale, vec2(0.001), vec2(0.999));
 }
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
-float foregroundAt(vec2 uv, float softness) {
-  float d = texture2D(uDepth, coverUv(uv)).r;
-  return smoothstep(SPLIT - softness, SPLIT + softness, d);
 }
 
 void main() {
@@ -75,29 +77,32 @@ void main() {
   float shift = min((rE * rE) / max(r, 0.0001), 0.6);
   vec2 luv = (p - dir * shift * unit) / uRes;
 
-  vec2 aspect = vec2(uRes.y / uRes.x, 1.0);
-  vec2 toLight = vec2(-0.55, -0.85) * aspect * 0.016;
+  // Nebula with a focus band along the filament edge.
+  vec2 ic = coverUv(luv - uTilt * vec2(0.006, 0.005));
+  float ir = uImgSize.x / uImgSize.y;
+  vec2 lineDir = normalize((uLineB - uLineA) * vec2(ir, 1.0));
+  vec2 rel = (ic - uLineA) * vec2(ir, 1.0);
+  float lineDist = abs(rel.x * lineDir.y - rel.y * lineDir.x);
+  float defocus = smoothstep(0.05, 0.32, lineDist) * 0.75;
+  vec3 col = mix(texture2D(uImage, ic).rgb, texture2D(uBlur, ic).rgb, defocus);
+  col *= 1.0 - 0.18 * defocus;
 
-  // Background: far starfield, slid slightly against the pointer and softened.
-  vec2 bs = luv - uTilt * vec2(0.012, 0.009);
-  vec2 bc = coverUv(bs);
-  vec3 col = mix(texture2D(uImage, bc).rgb, texture2D(uBlur, bc).rgb, 0.3) * 0.82;
-
-  // Foreground: near dust, slid further with the pointer.
-  vec2 fs = luv + uTilt * vec2(0.02, 0.015);
-  float fg = foregroundAt(fs, 0.08);
-  vec3 fgColor = texture2D(uImage, coverUv(fs)).rgb;
-  float fgShadow = 0.6 * foregroundAt(fs + toLight, 0.45) + 0.4 * foregroundAt(fs + toLight * 2.2, 0.45);
-
-  // Name, sitting between the two layers at the focal plane.
-  vec2 px = 1.0 / uRes;
-  vec3 m = texture2D(uText, luv).rgb;
+  // Name, in image space, drifting a bit more than the nebula.
+  vec2 tc = coverUv(luv + uTilt * vec2(0.01, 0.008));
+  vec2 texel = 1.0 / uTextSize;
+  vec3 m = texture2D(uText, tc).rgb;
   float face = m.r;
-  vec2 extrude = vec2(0.55, 1.0) * px * (uRes.y * 0.0011);
+
+  // Soft shadow on the nebula behind the letters.
+  float shadow = texture2D(uText, tc - vec2(0.004, 0.009) * vec2(1.0, ir)).g;
+  col *= 1.0 - 0.55 * shadow * (1.0 - face);
+
+  // Short extrusion toward the lower right.
+  vec2 extrude = vec2(0.6, 1.0) * texel * (uTextSize.y * 0.0012);
   float side = 0.0;
   float sideDepth = 0.0;
   for (int k = 1; k <= 6; k++) {
-    float hit = texture2D(uText, luv - extrude * float(k)).r;
+    float hit = texture2D(uText, tc - extrude * float(k)).r;
     if (hit > 0.5 && side < 0.5) {
       side = hit;
       sideDepth = float(k) / 6.0;
@@ -105,32 +110,23 @@ void main() {
   }
   float nameAlpha = max(face, side);
 
-  // Shadows on the background: the dust above it, and the name in front of it.
-  float nameShadow = texture2D(uText, luv - vec2(0.006, 0.012) * aspect).g;
-  col *= 1.0 - 0.4 * fgShadow * (1.0 - fg);
-  col *= 1.0 - 0.55 * nameShadow;
-
   if (nameAlpha > 0.001) {
-    vec2 o = px * 2.0;
-    float gx = texture2D(uText, luv + vec2(o.x, 0.0)).b - texture2D(uText, luv - vec2(o.x, 0.0)).b;
-    float gy = texture2D(uText, luv + vec2(0.0, o.y)).b - texture2D(uText, luv - vec2(0.0, o.y)).b;
+    vec2 o = texel * 2.0;
+    float gx = texture2D(uText, tc + vec2(o.x, 0.0)).b - texture2D(uText, tc - vec2(o.x, 0.0)).b;
+    float gy = texture2D(uText, tc + vec2(0.0, o.y)).b - texture2D(uText, tc - vec2(0.0, o.y)).b;
     vec3 n = normalize(vec3(-gx * 3.0, -gy * 3.0, 1.0));
-    vec3 lightDir = normalize(vec3(-0.5, -0.7, 0.6));
+    vec3 lightDir = normalize(vec3(-0.45, -0.7, 0.6));
     float diffuse = max(dot(n, lightDir), 0.0);
     float spec = pow(max(dot(reflect(-lightDir, n), vec3(0.0, 0.0, 1.0)), 0.0), 30.0);
 
-    // Warm white face with a cool shadow side, then a deep slate extrusion.
-    vec3 faceColor = mix(vec3(0.72, 0.78, 0.9), vec3(1.0, 0.98, 0.95), diffuse) + spec * 0.35;
-    vec3 sideColor = mix(vec3(0.2, 0.25, 0.36), vec3(0.07, 0.09, 0.14), sideDepth);
-    vec3 nameColor = mix(sideColor, faceColor, face);
-    // A little of the dust's shadow falls across the name too.
-    nameColor *= 1.0 - 0.2 * fgShadow;
-    col = mix(col, nameColor, nameAlpha);
+    // Silver face, plus colored light bouncing up from the filament below.
+    vec3 bounce = texture2D(uBlur, coverUv(luv + vec2(0.012, 0.035))).rgb;
+    float downward = clamp(n.y * 2.0 + 0.25, 0.0, 1.0);
+    vec3 faceColor = mix(vec3(0.7, 0.75, 0.86), vec3(1.0, 0.98, 0.96), diffuse) + spec * 0.35;
+    faceColor += bounce * (0.18 + 0.45 * downward);
+    vec3 sideColor = mix(vec3(0.18, 0.2, 0.3), vec3(0.05, 0.06, 0.1), sideDepth) + bounce * 0.2;
+    col = mix(col, mix(sideColor, faceColor, face), nameAlpha);
   }
-
-  // Foreground on top, mostly see-through where it crosses the letters.
-  float fgAlpha = fg * mix(1.0, 0.2, nameAlpha);
-  col = mix(col, fgColor * 1.04, fgAlpha);
 
   // Accretion glow, photon ring and event horizon.
   if (uStrength > 0.01) {
@@ -147,8 +143,8 @@ void main() {
 
   // Vignette and fine grain.
   float v = smoothstep(1.2, 0.3, length((uv - 0.5) * vec2(uRes.x / uRes.y, 1.0)));
-  col *= mix(0.5, 1.0, v);
-  col += (hash(p + fract(uTime) * 100.0) - 0.5) * 0.025;
+  col *= mix(0.55, 1.0, v);
+  col += (hash(p + fract(uTime) * 100.0) - 0.5) * 0.02;
   gl_FragColor = vec4(col, 1.0);
 }
 `
@@ -156,8 +152,7 @@ void main() {
 interface NebulaCanvasProps {
   imageUrl: string
   blurUrl: string
-  depthUrl: string
-  lines: string[]
+  name: string
   fontFamily: string
   reduceMotion: boolean
   onReady: () => void
@@ -197,49 +192,87 @@ function loadImage(url: string) {
   })
 }
 
-// Draws the name three times (sharp, wide blur, tight blur) and packs the
-// results into the R, G and B channels of one canvas. G drives the cast
-// shadow; B gives the bevel its rounded edge.
-function drawNameMask(width: number, height: number, lines: string[], fontFamily: string) {
+// The part of the image (in 0..1 coordinates) visible on a screen of this shape.
+function visibleRegion(screenAspect: number, imageAspect: number) {
+  const sx = (screenAspect > imageAspect ? 1 : screenAspect / imageAspect) * ZOOM
+  const sy = (screenAspect > imageAspect ? imageAspect / screenAspect : 1) * ZOOM
+  const fx = Math.min(Math.max(FOCUS[0], sx / 2), 1 - sx / 2)
+  const fy = Math.min(Math.max(FOCUS[1], sy / 2), 1 - sy / 2)
+  return { x0: fx - sx / 2, x1: fx + sx / 2, y0: fy - sy / 2, y1: fy + sy / 2 }
+}
+
+// Draws the name along the filament edge in image space, three times
+// (sharp, wide blur, tight blur), packed into the R, G and B channels.
+// G drives the cast shadow; B gives the bevel its rounded edge.
+function drawNameMask(texW: number, texH: number, name: string, fontFamily: string, screenAspect: number) {
+  const region = visibleRegion(screenAspect, texW / texH)
+  const ax = EDGE_A[0] * texW
+  const ay = EDGE_A[1] * texH
+  const dx = (EDGE_B[0] - EDGE_A[0]) * texW
+  const dy = (EDGE_B[1] - EDGE_A[1]) * texH
+
+  // Part of the edge line inside the visible region (with a small margin).
+  const portrait = screenAspect < 1
+  const margin = portrait ? 0.05 : 0.06
+  const limits: [number, number][] = [
+    [(region.x0 + margin * (region.x1 - region.x0)) * texW, (region.x1 - margin * (region.x1 - region.x0)) * texW],
+    [(region.y0 + margin * (region.y1 - region.y0)) * texH, (region.y1 - margin * (region.y1 - region.y0)) * texH],
+  ]
+  let t0 = -Infinity
+  let t1 = Infinity
+  const clip = (origin: number, delta: number, [lo, hi]: [number, number]) => {
+    const a = (lo - origin) / delta
+    const b = (hi - origin) / delta
+    t0 = Math.max(t0, Math.min(a, b))
+    t1 = Math.min(t1, Math.max(a, b))
+  }
+  clip(ax, dx, limits[0])
+  clip(ay, dy, limits[1])
+  const segment = Math.hypot(dx, dy) * Math.max(t1 - t0, 0.1)
+  const tm = (t0 + t1) / 2
+  const cx = ax + dx * tm
+  const cy = ay + dy * tm
+  const angle = Math.atan2(dy, dx)
+  const visibleHeight = (region.y1 - region.y0) * texH
+
   const layer = (blur: number) => {
     const canvas = document.createElement("canvas")
-    canvas.width = width
-    canvas.height = height
+    canvas.width = texW
+    canvas.height = texH
     const ctx = canvas.getContext("2d")!
     ctx.fillStyle = "#000"
-    ctx.fillRect(0, 0, width, height)
+    ctx.fillRect(0, 0, texW, texH)
 
-    let fontSize = Math.min(width * 0.1, height * 0.16)
+    let fontSize = visibleHeight * 0.09
     const setFont = () => {
       ctx.font = `400 ${fontSize}px ${fontFamily}`
-      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.05}px`
+      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.06}px`
     }
     setFont()
-    const widest = () => Math.max(...lines.map((line) => ctx.measureText(line).width))
-    while (widest() > width * (height > width ? 0.86 : 0.72) && fontSize > 12) {
+    while (ctx.measureText(name).width > segment * (portrait ? 0.88 : 0.74) && fontSize > 8) {
       fontSize *= 0.96
       setFont()
     }
 
-    const lineHeight = fontSize * 1.18
-    const portrait = height > width
-    const centerY = height * (portrait ? 0.32 : 0.29)
-    const top = centerY - (lineHeight * (lines.length - 1)) / 2
-
+    ctx.translate(cx, cy)
+    ctx.rotate(angle)
     ctx.textAlign = "center"
-    ctx.textBaseline = "middle"
+    ctx.textBaseline = "alphabetic"
     ctx.fillStyle = "#fff"
     // Blur is drawn as a shadow cast from text placed off-canvas, which works
     // in every browser (canvas filters are not supported everywhere).
-    const offset = blur > 0 ? width + 2000 : 0
+    const offset = blur > 0 ? texW * 3 : 0
     ctx.shadowColor = "#fff"
     ctx.shadowBlur = blur * fontSize
-    ctx.shadowOffsetX = offset
+    // Shadow offsets ignore the rotation, so rotate the offset to match the text.
+    ctx.shadowOffsetX = offset * Math.cos(angle)
+    ctx.shadowOffsetY = offset * Math.sin(angle)
+    // Baseline sits above the edge, in the dark space, so the letters ride the
+    // filament without crossing its bright strands.
+    const lift = -fontSize * 0.8
     const passes = blur > 0.1 ? 2 : 1
-    for (let pass = 0; pass < passes; pass++) {
-      lines.forEach((line, i) => ctx.fillText(line, width / 2 - offset, top + i * lineHeight))
-    }
-    return ctx.getImageData(0, 0, width, height).data
+    for (let pass = 0; pass < passes; pass++) ctx.fillText(name, -offset, lift)
+    return ctx.getImageData(0, 0, texW, texH).data
   }
 
   const sharp = layer(0)
@@ -247,10 +280,10 @@ function drawNameMask(width: number, height: number, lines: string[], fontFamily
   const tight = layer(0.06)
 
   const out = document.createElement("canvas")
-  out.width = width
-  out.height = height
+  out.width = texW
+  out.height = texH
   const ctx = out.getContext("2d")!
-  const image = ctx.createImageData(width, height)
+  const image = ctx.createImageData(texW, texH)
   for (let i = 0; i < image.data.length; i += 4) {
     image.data[i] = sharp[i]
     image.data[i + 1] = wide[i]
@@ -261,7 +294,7 @@ function drawNameMask(width: number, height: number, lines: string[], fontFamily
   return out
 }
 
-export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, reduceMotion, onReady, onFail }: NebulaCanvasProps) {
+export function NebulaCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, onReady, onFail }: NebulaCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -294,10 +327,11 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
     gl.enableVertexAttribArray(position)
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
 
-    const u = (name: string) => gl.getUniformLocation(program, name)
+    const u = (uniformName: string) => gl.getUniformLocation(program, uniformName)
     const uniforms = {
       res: u("uRes"),
       imgSize: u("uImgSize"),
+      textSize: u("uTextSize"),
       mouse: u("uMouse"),
       strength: u("uStrength"),
       time: u("uTime"),
@@ -306,11 +340,15 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
     gl.uniform1i(u("uImage"), 0)
     gl.uniform1i(u("uText"), 1)
     gl.uniform1i(u("uBlur"), 2)
-    gl.uniform1i(u("uDepth"), 3)
+    gl.uniform2f(u("uFocus"), FOCUS[0], FOCUS[1])
+    gl.uniform2f(u("uLineA"), EDGE_A[0], EDGE_A[1])
+    gl.uniform2f(u("uLineB"), EDGE_B[0], EDGE_B[1])
 
     const textures: (WebGLTexture | null)[] = []
     let textTexture: WebGLTexture | null = null
     let imageSize = [1, 1]
+    let textSize = [1, 1]
+    let lastAspect = 0
     let frame = 0
     let disposed = false
     let visible = true
@@ -337,12 +375,21 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
       canvas.width = width
       canvas.height = height
       gl.viewport(0, 0, width, height)
-      const mask = drawNameMask(width, height, lines, fontFamily)
-      if (textTexture) gl.deleteTexture(textTexture)
-      textTexture = makeTexture(gl, 1, mask)
+
+      // The name texture only depends on the screen shape, not its size.
+      const aspect = width / Math.max(height, 1)
+      if (!textTexture || Math.abs(aspect - lastAspect) > 0.02) {
+        lastAspect = aspect
+        const texW = 2560
+        const texH = Math.round(texW * (imageSize[1] / imageSize[0]))
+        textSize = [texW, texH]
+        const mask = drawNameMask(texW, texH, name, fontFamily, aspect)
+        if (textTexture) gl.deleteTexture(textTexture)
+        textTexture = makeTexture(gl, 1, mask)
+      }
       if (!lens.x && !lens.y) {
-        lens.x = width * 0.72
-        lens.y = height * 0.62
+        lens.x = width * 0.7
+        lens.y = height * 0.72
       }
     }
 
@@ -365,9 +412,9 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
         tiltX = (pointer.x / Math.max(canvas.clientWidth, 1)) * 2 - 1
         tiltY = (pointer.y / Math.max(canvas.clientHeight, 1)) * 2 - 1
       } else if (!reduceMotion) {
-        // Slow idle orbit through the lower half, clear of the name.
-        targetX = canvas.width * (0.5 + 0.3 * Math.sin(t * 0.11))
-        targetY = canvas.height * (0.68 + 0.1 * Math.sin(t * 0.17 + 1.3))
+        // Slow idle orbit through the dark lower right, clear of the name.
+        targetX = canvas.width * (0.68 + 0.18 * Math.sin(t * 0.11))
+        targetY = canvas.height * (0.74 + 0.08 * Math.sin(t * 0.17 + 1.3))
         targetStrength = 0.7
         tiltX = Math.sin(t * 0.13) * 0.6
         tiltY = Math.sin(t * 0.09 + 0.8) * 0.4
@@ -387,6 +434,7 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
 
       gl.uniform2f(uniforms.res, canvas.width, canvas.height)
       gl.uniform2f(uniforms.imgSize, imageSize[0], imageSize[1])
+      gl.uniform2f(uniforms.textSize, textSize[0], textSize[1])
       gl.uniform2f(uniforms.mouse, lens.x, lens.y)
       gl.uniform1f(uniforms.strength, lens.strength)
       gl.uniform1f(uniforms.time, t)
@@ -419,11 +467,11 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
       if (reduceMotion) render()
     }
 
-    Promise.all([loadImage(imageUrl), loadImage(blurUrl), loadImage(depthUrl), document.fonts.load(`400 100px ${fontFamily}`).catch(() => undefined)])
-      .then(([image, blur, depth]) => {
+    Promise.all([loadImage(imageUrl), loadImage(blurUrl), document.fonts.load(`400 100px ${fontFamily}`).catch(() => undefined)])
+      .then(([image, blur]) => {
         if (disposed) return
         imageSize = [image.naturalWidth, image.naturalHeight]
-        textures.push(makeTexture(gl, 0, image), makeTexture(gl, 2, blur), makeTexture(gl, 3, depth))
+        textures.push(makeTexture(gl, 0, image), makeTexture(gl, 2, blur))
         resize()
         ready = true
         render()
@@ -434,6 +482,7 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
       .catch(() => onFail())
 
     const resizeObserver = new ResizeObserver(() => {
+      if (!ready) return
       resize()
       render()
     })
@@ -471,7 +520,7 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
       gl.deleteBuffer(buffer)
       gl.deleteProgram(program)
     }
-  }, [imageUrl, blurUrl, depthUrl, lines, fontFamily, reduceMotion, onReady, onFail])
+  }, [imageUrl, blurUrl, name, fontFamily, reduceMotion, onReady, onFail])
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />
 }
