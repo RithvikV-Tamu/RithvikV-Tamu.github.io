@@ -14,7 +14,7 @@ export function StatsStrip() {
         {quickStats.map((stat, i) => (
           <div key={stat.label} className={i > 0 ? "border-white/10 px-2 py-10 lg:border-l lg:px-8" : "px-2 py-10 lg:pr-8"}>
             <p className="font-mono text-4xl font-semibold text-foreground tabular-nums sm:text-5xl">
-              <CountUp to={stat.count} start={inView} from={stat.count > 1000 ? stat.count - 6 : 0} />
+              <CountUp to={stat.count} start={inView} from={stat.from ?? 0} />
               <span className="text-sunlight">{stat.suffix}</span>
             </p>
             <p className="mt-2 max-w-[14rem] text-sm text-muted-foreground">{stat.label}</p>
@@ -39,5 +39,6 @@ function CountUp({ to, from, start }: { to: number; from: number; start: boolean
     return () => controls.stop()
   }, [start, from, to, reduceMotion])
 
-  return <>{reduceMotion ? to : value}</>
+  const shown = reduceMotion ? to : value
+  return <>{to >= 10000 ? shown.toLocaleString("en-US") : shown}</>
 }

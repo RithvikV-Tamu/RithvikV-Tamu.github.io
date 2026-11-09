@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from "react"
 import { useReducedMotion } from "motion/react"
 import { conopsSteps } from "@/content/site"
 
+// Texas A&M colors: maroon, white and soft rose.
+const MAROON = "#500000"
+const ROSE = "#e3b5b5"
+const MUTED = "#c9a3a3"
+
 // Mission plan as a clockwise loop (Earth at the bottom, orbit at the top).
 // Click or tab to a step to read it. While in view it advances on its own,
 // and stops once the visitor picks a step.
@@ -47,13 +52,18 @@ export function ConopsExplorer() {
       <svg viewBox="0 0 520 300" className="w-full" aria-label="Mission plan loop">
         <defs>
           <marker id="conops-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#79b9ea" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={ROSE} />
           </marker>
+          <linearGradient id="conops-ground" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#7a1010" />
+            <stop offset="1" stopColor={MAROON} />
+          </linearGradient>
         </defs>
-        <path d="M 0 300 Q 260 230 520 300 Z" fill="#13233a" />
-        <text x="260" y="292" textAnchor="middle" fill="#9caab8" fontSize="11" fontFamily="var(--font-mono)">EARTH</text>
-        <text x="260" y="22" textAnchor="middle" fill="#9caab8" fontSize="11" fontFamily="var(--font-mono)">ORBIT</text>
-        <circle cx={center.x} cy={center.y} r={radius} fill="none" stroke="#79b9ea" strokeOpacity="0.25" strokeDasharray="4 6" />
+        <path d="M 0 300 Q 260 230 520 300 Z" fill="url(#conops-ground)" />
+        <path d="M 0 300 Q 260 230 520 300" fill="none" stroke={ROSE} strokeOpacity="0.5" />
+        <text x="260" y="292" textAnchor="middle" fill="#ffffff" fontSize="11" fontFamily="var(--font-mono)" letterSpacing="2">EARTH</text>
+        <text x="260" y="22" textAnchor="middle" fill={MUTED} fontSize="11" fontFamily="var(--font-mono)" letterSpacing="2">ORBIT</text>
+        <circle cx={center.x} cy={center.y} r={radius} fill="none" stroke={ROSE} strokeOpacity="0.25" strokeDasharray="4 6" />
 
         {angles.map((angle, index) => {
           const nextAngle = angles[(index + 1) % angles.length]
@@ -65,7 +75,7 @@ export function ConopsExplorer() {
               key={`arc-${angle}`}
               d={`M ${start.x} ${start.y} A ${radius} ${radius} 0 0 1 ${end.x} ${end.y}`}
               fill="none"
-              stroke="#79b9ea"
+              stroke={lit ? "#ffffff" : ROSE}
               strokeOpacity={lit ? 1 : 0.45}
               strokeWidth={lit ? 2.2 : 1.4}
               markerEnd="url(#conops-arrow)"
@@ -101,19 +111,19 @@ export function ConopsExplorer() {
                 cx={dot.x}
                 cy={dot.y}
                 r={lit ? 14 : 11}
-                fill={lit ? "#e8b97a" : "#05070d"}
-                stroke="#e8b97a"
+                fill={lit ? "#ffffff" : MAROON}
+                stroke={lit ? "#ffffff" : ROSE}
                 strokeWidth="1.5"
                 className="transition-all duration-300"
               />
-              <text x={dot.x} y={dot.y + 4} textAnchor="middle" fill={lit ? "#05070d" : "#e8b97a"} fontSize="11" fontFamily="var(--font-mono)" fontWeight="600">
+              <text x={dot.x} y={dot.y + 4} textAnchor="middle" fill={lit ? MAROON : "#ffffff"} fontSize="11" fontFamily="var(--font-mono)" fontWeight="600">
                 {index + 1}
               </text>
               <text
                 x={label.x}
                 y={label.y + 4}
                 textAnchor={anchor}
-                fill={lit ? "#ffffff" : "#c3ccd6"}
+                fill={lit ? "#ffffff" : MUTED}
                 fontSize="12.5"
                 fontWeight={lit ? 600 : 400}
                 className="max-sm:hidden"
@@ -126,7 +136,7 @@ export function ConopsExplorer() {
       </svg>
 
       <p className="min-h-[2.75rem] text-sm leading-snug text-white" aria-live="polite">
-        <span className="mr-2 font-mono text-xs text-sunlight">{String(active + 1).padStart(2, "0")}</span>
+        <span className="mr-2 rounded bg-[#500000] px-1.5 py-0.5 font-mono text-xs text-white">{String(active + 1).padStart(2, "0")}</span>
         <span className="font-semibold">{conopsSteps[active].label}.</span> {conopsSteps[active].detail}
       </p>
     </div>

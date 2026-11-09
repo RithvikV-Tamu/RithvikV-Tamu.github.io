@@ -46,7 +46,7 @@ export function Toolkit() {
         >
           {selected ? (
             <>
-              <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">Used in</p>
+              <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">Used In</p>
               <p className="mt-1 text-xl font-semibold">{selected.name}</p>
               {selected.usedIn.length > 0 ? (
                 <ul className="mt-4 space-y-2 text-sm text-foreground/85">

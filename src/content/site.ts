@@ -10,20 +10,20 @@ export const profile = {
   github: "https://github.com/RithvikV-Tamu",
   linkedin: "https://www.linkedin.com/in/rithvik-vootukur",
   emails: [
-    { label: "School email", address: "rithvik_v@tamu.edu" },
-    { label: "Personal email", address: "vootukur.r@gmail.com" },
+    { label: "School Email", address: "rithvik_v@tamu.edu" },
+    { label: "Personal Email", address: "vootukur.r@gmail.com" },
   ],
   // PDFs in public/resume/. Copy updated versions from C:\Projects\Resumes.
   resumes: [
-    { label: "Aerospace resume", short: "Resume", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Aerospace_Resume.pdf` },
-    { label: "Curriculum vitae", short: "CV", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Curriculum_Vitae.pdf` },
+    { label: "Aerospace Resume", short: "Resume", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Aerospace_Resume.pdf` },
+    { label: "Curriculum Vitae", short: "CV", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Curriculum_Vitae.pdf` },
   ],
 }
 
 export const about = {
   paragraphs: [
     "I study Aerospace Engineering at Texas A&M and graduate in May 2027.",
-    "Most of my time goes to two projects. In Prof. Diego Donzis's Turbulence and Advanced Computations Laboratory, I run simulations of laser beams passing through turbulent air. On the TAMU-SPIRIT 2 capstone, I'm team lead for a payload designed for the International Space Station.",
+    "Most of my time goes to two projects. In Prof. Diego Donzis's Turbulence and Advanced Computations Laboratory, I run simulations of laser beams passing through turbulent air. On the TAMU-SPIRIT 2 capstone, I lead a 16-person team preparing experiments for the outside of the International Space Station.",
     "The work I'm best at sits between code and physics: setting up the runs, processing the output, and explaining what the plot actually shows. I also do CAD and trade studies, and I've tutored more than 30 students.",
   ],
   facts: [
@@ -48,7 +48,6 @@ export const stages = [
 ] as const
 
 export const sectionIntros = {
-  work: "Four projects, most important first.",
   more: "Smaller projects: solvers, machine learning and tools I built for myself.",
   toolkit: "Hover or tap a tool to see where I've used it.",
   contact: "The fastest way to reach me is below.",
@@ -59,16 +58,17 @@ export const heroFacts = [
   { label: "Studying", detail: "Aerospace Engineering, Texas A&M" },
   { label: "Graduating", detail: "May 2027 · Engineering Honors" },
   { label: "Research", detail: "Laser beams through turbulence, TACL" },
-  { label: "Leading", detail: "TAMU-SPIRIT 2, an ISS payload capstone" },
+  { label: "Leading", detail: "TAMU-SPIRIT 2" },
 ]
 
 // Short facts between the featured work and the rest of the page.
-// `count` is the number to animate up to; `suffix` follows it.
+// `count` is the number to animate up to, starting at `from` (default 0);
+// `suffix` follows it. Counts of 10,000 and up show a thousands comma.
 export const quickStats = [
-  { count: 300, suffix: "+", label: "laser propagation simulations run" },
-  { count: 6, suffix: "", label: "students on the Blue Skies team I led" },
-  { count: 30, suffix: "+", label: "students tutored, over 300 hours" },
-  { count: 2027, suffix: "", label: "graduating with a B.S., in May" },
+  { count: 10000, suffix: "+", label: "RIPTIDE turbulence cases run" },
+  { count: 16, suffix: "", label: "Students on the TAMU-SPIRIT 2 team I lead" },
+  { count: 30, suffix: "+", label: "Students tutored, over 300 hours" },
+  { count: 2027, from: 2021, suffix: "", label: "Graduating with a B.S., in May" },
 ]
 
 // Interactive or static cards shown on a project's photo panel.
@@ -102,17 +102,17 @@ export interface FeaturedProject {
 export const featured: FeaturedProject[] = [
   {
     id: "tacl",
-    title: "Laser beams through turbulence",
-    category: "Computational research",
-    dates: "June 2026 to present",
-    role: "Research assistant, TACL · Prof. Diego Donzis",
+    title: "Laser Beams Through Turbulence",
+    category: "Computational Research",
+    dates: "June 2026 to Present",
+    role: "Research Assistant, TACL · Prof. Diego Donzis",
     summary:
       "Turbulent air makes a laser beam flicker and drift. I study which sizes of turbulent eddies cause it, and how that changes with distance, focusing, beam size, wavelength and turbulence strength.",
     points: [
       "Design controlled parameter sweeps for the lab's RIPTIDE propagation code",
       "Run the cases on the lab's Linux server and process the HDF5 output in Python",
       "Turn the results into figures for lab meetings",
-      "300+ simulations so far",
+      "10,000+ RIPTIDE cases run so far",
     ],
     tools: ["Python", "NumPy", "Matplotlib", "HDF5", "Linux"],
     status: "Ongoing",
@@ -128,18 +128,19 @@ export const featured: FeaturedProject[] = [
   },
   {
     id: "spirit",
-    title: "TAMU-SPIRIT 2: an ISS payload",
-    category: "Spacecraft systems",
-    dates: "Fall 2026 to present",
-    role: "Team lead and editor, system requirements review",
+    title: "TAMU-SPIRIT 2: An ISS Payload",
+    category: "Spacecraft Systems",
+    dates: "Fall 2026 to Present",
+    role: "Team Lead, 16-Person Senior Capstone Team",
     summary:
-      "Our senior capstone is designing experiments for about six months of exposure on the International Space Station. Step through the mission plan below.",
+      "A Texas A&M and Aegis Aerospace program preparing four experiments for an external ISS platform based on NASA's MISSE design, with about six months of exposure in orbit. Click through the mission plan below.",
     points: [
-      "Led the team and edited the system requirements review",
+      "Lead the 16-person team through the design reviews",
+      "Edited and presented the System Definition Review: goals, requirements and verification, concept of operations, and the plan to PDR",
       "Wrote the passive exposure sections: scope, operations, requirements and verification",
-      "Ran battery and power trade studies for the PACT experiment",
+      "Run Abaqus FEA for structures and battery trade studies for power and thermal planning",
     ],
-    tools: ["Requirements", "Trade studies", "Excel", "LaTeX"],
+    tools: ["Requirements", "Abaqus", "Trade Studies", "Excel", "LaTeX"],
     status: "In design. Nothing has flown yet.",
     photo: {
       name: "spirit-misse",
@@ -152,10 +153,10 @@ export const featured: FeaturedProject[] = [
   },
   {
     id: "blue-skies",
-    title: "Search-and-rescue drone concept",
+    title: "Search-and-Rescue Drone Concept",
     category: "NASA Gateways to Blue Skies",
     dates: "2023 to 2024",
-    role: "Team lead, six-person team",
+    role: "Team Lead, Six-Person Team",
     summary:
       "For NASA's 2024 Gateways to Blue Skies competition, our team proposed a drone for finding people after natural disasters. I came up with its spherical protective roll cage, led the team, and handled the graphics and materials research.",
     points: [
@@ -164,7 +165,7 @@ export const featured: FeaturedProject[] = [
       "Compared structural materials and made the Blender renders",
       "Delivered a 14-page proposal and a 20-minute presentation",
     ],
-    tools: ["SolidWorks", "Blender", "Pugh charts"],
+    tools: ["SolidWorks", "Blender", "Pugh Charts"],
     status: "Proposal completed. A concept, never built.",
     photo: {
       name: "blue-skies-hurricane",
@@ -182,14 +183,18 @@ export const featured: FeaturedProject[] = [
   },
   {
     id: "aircraft",
-    title: "Sailplane wing and airfoil study",
-    category: "Aircraft design",
+    title: "AS 35 Mi Sailplane Wing Design",
+    category: "Aircraft Design",
     dates: "",
-    role: "",
+    role: "Aerodynamic Design Project",
     summary:
-      "I built a parametric SolidWorks model of an AS 35 Mi sailplane wing and the aircraft around it, then compared glider airfoils for it. Try the airfoil explorer below.",
-    points: [],
-    tools: ["SolidWorks"],
+      "A wing design study for the AS 35 Mi sailplane. I modeled the wing and the aircraft around it in SolidWorks, then ran an airfoil trade study to pick a section for it. Reshape an airfoil below to see how camber and thickness change its lift.",
+    points: [
+      "Built a parametric SolidWorks model of the wing and surrounding aircraft geometry, so the configuration could change quickly during design iteration",
+      "Compared 10 glider airfoil candidates in XFOIL on aerodynamic performance metrics",
+      "Documented the trade study used to select the airfoil",
+    ],
+    tools: ["SolidWorks", "XFOIL", "CAD", "Trade Studies"],
     status: "",
     photo: {
       name: "aircraft-sailplane",
@@ -204,11 +209,11 @@ export const featured: FeaturedProject[] = [
 
 // Mission plan for the TAMU-SPIRIT 2 loop, clockwise from Earth.
 export const conopsSteps = [
-  { label: "Build and test", detail: "Experiments are built and tested at Texas A&M." },
+  { label: "Build and Test", detail: "Experiments are built and tested at Texas A&M." },
   { label: "Integrate", detail: "The experiments are loaded into a payload carrier." },
   { label: "Launch", detail: "The carrier launches to the station on a Falcon 9." },
   { label: "Install on ISS", detail: "After docking, the robotic arm unloads the carrier and installs it outside." },
-  { label: "~6 months exposure", detail: "Samples sit outside the station for a nominal six months." },
+  { label: "~6 Months Exposure", detail: "Samples sit outside the station for a nominal six months." },
   { label: "Return to PI", detail: "The carrier is reloaded, reenters, splashes down and goes back to the researchers." },
 ]
 
@@ -225,8 +230,8 @@ export interface MoreProject {
 
 export const moreWork: MoreProject[] = [
   {
-    name: "RS-25 nozzle solver",
-    meta: "Python · Compressible flow",
+    name: "RS-25 Nozzle Solver",
+    meta: "Python · Compressible Flow",
     description:
       "Solves 1-D isentropic flow through an approximate RS-25 nozzle with the area-Mach relation and Brent root finding, then compares the results with public RS-25 data.",
     icon: "nozzle",
@@ -234,8 +239,8 @@ export const moreWork: MoreProject[] = [
     size: "wide",
   },
   {
-    name: "Heat transfer solvers",
-    meta: "Python · Numerical methods",
+    name: "Heat Transfer Solvers",
+    meta: "Python · Numerical Methods",
     description:
       "1-D conduction with finite differences (2nd and 4th order) and finite elements (p=1, p=2), checked with Richardson convergence studies.",
     icon: "heat",
@@ -243,8 +248,8 @@ export const moreWork: MoreProject[] = [
     size: "normal",
   },
   {
-    name: "Bearing fault classification",
-    meta: "Python · Machine learning",
+    name: "Bearing Fault Classification",
+    meta: "Python · Machine Learning",
     description:
       "Sorts bearing vibration data into normal and three fault types using FFT features, logistic regression and a PyTorch neural network.",
     icon: "wave",
@@ -284,7 +289,7 @@ export const toolkit: ToolGroup[] = [
   {
     name: "Programming",
     tools: [
-      { name: "Python", usedIn: ["TACL", "RS-25 nozzle", "Heat transfer", "Bearing faults", "Organization Bot"] },
+      { name: "Python", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer", "Bearing Faults", "Organization Bot"] },
       { name: "MATLAB", usedIn: ["Coursework"] },
       { name: "TypeScript / React", usedIn: ["Personal Dashboard", "ETF Research", "This site"] },
       { name: "Rust", usedIn: ["Personal Dashboard"] },
@@ -293,21 +298,21 @@ export const toolkit: ToolGroup[] = [
     ],
   },
   {
-    name: "Scientific computing",
+    name: "Scientific Computing",
     tools: [
-      { name: "NumPy / SciPy", usedIn: ["TACL", "RS-25 nozzle", "Heat transfer"] },
-      { name: "Matplotlib", usedIn: ["TACL", "RS-25 nozzle", "Heat transfer"] },
+      { name: "NumPy / SciPy", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer"] },
+      { name: "Matplotlib", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer"] },
       { name: "HDF5", usedIn: ["TACL"] },
-      { name: "scikit-learn / PyTorch", usedIn: ["Bearing faults"] },
+      { name: "scikit-learn / PyTorch", usedIn: ["Bearing Faults"] },
     ],
   },
   {
-    name: "Design and analysis",
+    name: "Design and Analysis",
     tools: [
       { name: "SolidWorks", usedIn: ["Blue Skies", "Sailplane"] },
       { name: "Blender", usedIn: ["Blue Skies"] },
-      { name: "Abaqus", usedIn: ["Coursework"] },
-      { name: "XFOIL", usedIn: [] },
+      { name: "Abaqus", usedIn: ["TAMU-SPIRIT 2", "Coursework"] },
+      { name: "XFOIL", usedIn: ["Sailplane"] },
       { name: "FreeFlyer", usedIn: ["Coursework"] },
       { name: "Excel Solver", usedIn: ["Coursework"] },
     ],
@@ -316,7 +321,7 @@ export const toolkit: ToolGroup[] = [
     name: "Workflow",
     tools: [
       { name: "Linux", usedIn: ["TACL"] },
-      { name: "Git / GitHub", usedIn: ["All software projects"] },
+      { name: "Git / GitHub", usedIn: ["All Software Projects"] },
       { name: "SVN", usedIn: ["TACL"] },
       { name: "LaTeX", usedIn: ["TAMU-SPIRIT 2", "Coursework"] },
     ],
@@ -326,7 +331,7 @@ export const toolkit: ToolGroup[] = [
 export const timeline = [
   {
     title: "2022",
-    heading: "Started tutoring",
+    heading: "Started Tutoring",
     text: "Volunteered at a tutoring center, then tutored privately and through Texas A&M's HELP program. More than 30 students and 300 hours so far.",
   },
   {
@@ -342,7 +347,7 @@ export const timeline = [
   {
     title: "Fall 2026",
     heading: "TAMU-SPIRIT 2",
-    text: "Took on team lead and editor for the ISS payload capstone's system requirements review.",
+    text: "Became team lead of the 16-person ISS payload capstone. Edited and presented the System Definition Review.",
   },
   {
     title: "May 2027",

@@ -67,7 +67,7 @@ export function TopNav({ activeIndex, onOpenSearch }: TopNavProps) {
           >
             <Search className="h-4 w-4" aria-hidden="true" />
             <span className="max-sm:sr-only md:hidden">Menu</span>
-            <span className="hidden md:inline">Jump to</span>
+            <span className="hidden md:inline">Jump To</span>
             <kbd className="hidden rounded bg-white/10 px-1.5 font-mono text-[10px] lg:inline">Ctrl K</kbd>
           </button>
         </div>

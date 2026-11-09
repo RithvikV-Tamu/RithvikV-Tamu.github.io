@@ -16,7 +16,7 @@ const icons: Record<MoreIcon, React.ElementType> = {
 export function MoreWork() {
   return (
     <section id="more" className="mx-auto max-w-6xl px-6 py-28">
-      <SectionHeading stageId="more" title="More work" intro={sectionIntros.more} />
+      <SectionHeading stageId="more" title="More Work" intro={sectionIntros.more} />
       <Reveal>
         <BentoGrid className="lg:auto-rows-[17rem]">
           {moreWork.map((item) => (

@@ -1,12 +1,13 @@
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
+import { MousePointerClick } from "lucide-react"
 import { AirfoilExplorer } from "@/components/demos/airfoil-explorer"
 import { BeamTurbulence } from "@/components/demos/beam-turbulence"
 import { ConopsExplorer } from "@/components/demos/conops-explorer"
 import { Photo } from "@/components/photo"
 import { Reveal } from "@/components/reveal"
 import { SectionHeading } from "@/components/section-heading"
-import { featured, sectionIntros, type FeaturedProject } from "@/content/site"
+import { featured, type FeaturedProject } from "@/content/site"
 import { cn } from "@/lib/utils"
 import blueSkiesRollCage from "@/assets/projects/blue-skies-roll-cage.webp"
 
@@ -14,11 +15,13 @@ const images: Record<string, string> = {
   "blue-skies-roll-cage": blueSkiesRollCage,
 }
 
+const touch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+
 export function FeaturedWork() {
   return (
     <section id="work">
       <div className="mx-auto max-w-6xl px-6 pt-16 pb-4">
-        <SectionHeading stageId="work" title="Featured work" intro={sectionIntros.work} />
+        <SectionHeading stageId="work" title="Featured Work" center />
       </div>
       {featured.map((project, index) => (
         <ProjectPanel key={project.id} project={project} index={index} />
@@ -120,9 +123,19 @@ function ProjectInset({ project }: { project: FeaturedProject }) {
     )
   }
 
+  const aggie = project.inset === "conops"
+
   return (
-    <div className="mt-8 max-w-md rounded-xl border border-white/15 bg-black/55 p-4 shadow-2xl shadow-black/40 backdrop-blur-md">
-      <p className="mb-2 font-mono text-[10px] tracking-[0.25em] text-sunlight uppercase">Try it</p>
+    <div
+      className={cn(
+        "mt-8 max-w-md rounded-xl border p-4 shadow-2xl shadow-black/40 backdrop-blur-md",
+        aggie ? "border-[#8a2a2a]/70 bg-[#1a0606]/75" : "border-white/15 bg-black/55"
+      )}
+    >
+      <p className={cn("mb-2 flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase", aggie ? "text-[#e0b0b0]" : "text-sunlight")}>
+        <MousePointerClick className="h-3.5 w-3.5" aria-hidden="true" />
+        {touch ? "Tap around" : "Click around"}
+      </p>
       {project.inset === "beam" && <BeamTurbulence />}
       {project.inset === "conops" && <ConopsExplorer />}
       {project.inset === "airfoil" && <AirfoilExplorer />}

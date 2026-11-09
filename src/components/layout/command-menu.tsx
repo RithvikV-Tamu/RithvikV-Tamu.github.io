@@ -49,7 +49,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   ].filter((link) => link.url)
 
   return (
-    <CommandDialog open={open} onOpenChange={onOpenChange} title="Jump to" description="Search sections, projects and links">
+    <CommandDialog open={open} onOpenChange={onOpenChange} title="Jump To" description="Search sections, projects and links">
       <Command>
         <CommandInput placeholder="Search sections, projects and links..." />
         <CommandList>

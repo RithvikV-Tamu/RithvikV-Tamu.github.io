@@ -67,7 +67,7 @@ const BentoCard = ({
       {meta && <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">{meta}</p>}
       <h3 className="text-xl font-semibold text-neutral-100">{name}</h3>
       <p className="max-w-lg text-sm leading-relaxed text-neutral-400">{description}</p>
-      {!href && <p className="mt-2 font-mono text-[11px] text-white/40">Private repository</p>}
+      {!href && <p className="mt-2 font-mono text-[11px] text-white/40">Private Repository</p>}
       {href && (
         <a
           href={href}
