@@ -24,12 +24,29 @@ npm run build
 npm run preview
 ```
 
+## Editing the page
+
+All text and links are in `src/content/site.ts`. Each section is a file in `src/components/sections/`. A blank field (`""`) hides that item.
+
 ## Adding a 21st.dev component
 
-1. Find the component on https://21st.dev and copy its install command. It looks like `npx shadcn@latest add "https://21st.dev/r/<author>/<component>"`.
-2. Run it in this folder. The source lands in `src/components/ui/`.
-3. Replace Next.js-only imports if the component has them: `next/image` becomes a plain `<img>`, `next/link` becomes `<a>`, and a `"use client"` line can be deleted.
-4. Check the component's license on its 21st.dev page.
+21st.dev installs need a personal API key (free accounts have a daily limit). Many of its components are mirrors of Aceternity UI and Magic UI, which install without a key:
+
+```powershell
+npx shadcn@latest add "https://ui.aceternity.com/registry/<name>.json"
+npx shadcn@latest add "https://magicui.design/r/<name>.json"
+```
+
+For a 21st.dev-only component, set your key in your own terminal first (`$env:API_KEY_21ST = "..."`, never commit it) and run the install command from its page.
+
+After installing:
+
+1. The source lands in `src/components/ui/`.
+2. Replace Next.js-only imports if the component has them: `next/image` becomes a plain `<img>`, `next/link` becomes `<a>`, and a `"use client"` line can be deleted.
+3. Check the component's license.
+4. Watch for heavy extras (some pull in Three.js). Remove anything the page does not need.
+
+Adapted components in this repo: Timeline, Card Spotlight, Stars Background, Shooting Stars (Aceternity UI, MIT) and Bento Grid (Magic UI, MIT).
 
 ## Layout
 

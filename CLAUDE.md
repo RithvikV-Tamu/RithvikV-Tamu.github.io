@@ -5,7 +5,8 @@ One-page interactive portfolio. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.
 ## Stack
 
 - Vite + React + TypeScript + Tailwind CSS v4 + shadcn/ui (Radix base, Nova preset). Run commands are in `README.md`.
-- UI components come mainly from 21st.dev, installed with `npx shadcn@latest add "<21st.dev registry URL>"` into `src/components/ui/`. Replace Next.js-only imports (`next/image`, `next/link`, `"use client"`). Check each component's license.
+- UI components come mainly from 21st.dev. Its installs need a personal API key, so prefer the same components from the Aceternity UI (`https://ui.aceternity.com/registry/<name>.json`) and Magic UI (`https://magicui.design/r/<name>.json`) registries, which need no key. Components land in `src/components/ui/`. Replace Next.js-only imports (`next/image`, `next/link`, `"use client"`), drop heavy extras like Three.js, and check each license.
+- All page text and links live in `src/content/site.ts`. Sections are in `src/components/sections/`.
 - Build physics demos (beam, airfoil, nozzle, orbits) myself in plain TypeScript so they are accurate. Use 21st.dev for layout and motion.
 - `@/` maps to `src/`. The site is always dark (`class="dark"` on `<html>`).
 - Must stay a static build. No server code, no secrets in client code.
