@@ -40,6 +40,10 @@ uniform vec2 uJet;
 uniform vec2 uTilt;
 uniform float uZoom;
 uniform float uTime;
+uniform vec2 uSun;
+uniform float uSunStrength;
+
+const int RAY_STEPS = 24;
 
 vec2 coverUv(vec2 uv) {
   float sr = uRes.x / uRes.y;
@@ -54,26 +58,73 @@ float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+// Light that can reach the camera from a point on screen: bright gaps in the
+// clouds plus the sun's glow. The jet is dark in the photo and the letters are
+// masked out, so both block the light and cast shadow streaks in the rays.
+float lightAt(vec2 q, vec2 aspect) {
+  vec3 c = texture2D(uImage, coverUv(q + uTilt * vec2(0.008, 0.006))).rgb;
+  float lum = dot(c, vec3(0.299, 0.587, 0.114));
+  float gaps = smoothstep(0.62, 0.98, lum) * 0.7;
+  float sun = exp(-length((q - uSun) * aspect) * 14.0) * 1.8;
+  float letters = texture2D(uText, q - uTilt * vec2(0.006, 0.004)).r;
+  float open = smoothstep(0.06, 0.22, lum);
+  return (gaps + sun) * open * (1.0 - letters);
+}
+
 void main() {
   vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
   vec2 p = uv * uRes;
   float ir = uImgSize.x / uImgSize.y;
+  vec2 aspect = vec2(uRes.x / uRes.y, 1.0);
 
   // Photo, focused on the jet.
   vec2 ic = coverUv(uv + uTilt * vec2(0.008, 0.006));
   float fromJet = length((ic - uJet) * vec2(ir, 1.0));
   float defocus = smoothstep(0.1, 0.7, fromJet) * 0.7;
   vec3 col = mix(texture2D(uImage, ic).rgb, texture2D(uBlur, ic).rgb, defocus);
+  // Graded down a little so the light shafts read against the clouds.
+  col *= mix(1.0, 0.78, uSunStrength);
 
-  // Name: backlit silhouette.
+  // Name: backlit silhouette. The rim is brightest on edges facing the sun.
   vec2 tc = uv - uTilt * vec2(0.006, 0.004);
   vec3 m = texture2D(uText, tc).rgb;
   float outside = m.g * (1.0 - m.r);
   col *= 1.0 - 0.28 * outside;
-  float rim = clamp(m.r - m.b, 0.0, 1.0);
+  vec2 px = 1.0 / uRes;
+  vec2 grad = vec2(
+    texture2D(uText, tc + vec2(px.x * 2.0, 0.0)).b - texture2D(uText, tc - vec2(px.x * 2.0, 0.0)).b,
+    texture2D(uText, tc + vec2(0.0, px.y * 2.0)).b - texture2D(uText, tc - vec2(0.0, px.y * 2.0)).b
+  );
+  vec2 outward = length(grad) > 0.0001 ? normalize(-grad) : vec2(0.0);
+  vec2 toSun = normalize((uSun - uv) * aspect + vec2(0.0001));
+  float facing = max(dot(outward, toSun), 0.0);
+  float rim = clamp(m.r - m.b, 0.0, 1.0) * (0.35 + 1.1 * facing * uSunStrength);
   vec3 face = mix(vec3(0.05, 0.035, 0.03), vec3(0.11, 0.08, 0.06), uv.y);
   face += vec3(1.0, 0.76, 0.48) * rim * 0.85;
   col = mix(col, face, m.r);
+
+  // Light shafts: march toward the sun and gather the light along the way.
+  if (uSunStrength > 0.01) {
+    vec2 stepUv = (uSun - uv) * (1.0 / float(RAY_STEPS));
+    vec2 q = uv;
+    float decay = 1.0;
+    float rays = 0.0;
+    float jitter = hash(p + fract(uTime)) * 0.8;
+    q += stepUv * jitter;
+    for (int i = 0; i < RAY_STEPS; i++) {
+      rays += lightAt(q, aspect) * decay;
+      decay *= 0.965;
+      q += stepUv;
+    }
+    rays /= float(RAY_STEPS);
+    // Glow and shafts land on open sky, not on the jet or the letters.
+    float lumHere = dot(col, vec3(0.299, 0.587, 0.114));
+    float openHere = smoothstep(0.06, 0.2, lumHere) * (1.0 - m.r);
+    float sunGlow = exp(-length((uv - uSun) * aspect) * 7.0);
+    vec3 warm = vec3(1.0, 0.8, 0.55);
+    col += warm * rays * 1.1 * uSunStrength * openHere;
+    col += warm * sunGlow * 0.18 * uSunStrength * openHere;
+  }
 
   // Vignette and fine grain.
   float v = smoothstep(1.25, 0.3, length((uv - 0.5) * vec2(uRes.x / uRes.y, 1.0)));
@@ -229,6 +280,8 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
       tilt: u("uTilt"),
       zoom: u("uZoom"),
       time: u("uTime"),
+      sun: u("uSun"),
+      sunStrength: u("uSunStrength"),
     }
     gl.uniform1i(u("uImage"), 0)
     gl.uniform1i(u("uText"), 1)
@@ -245,6 +298,8 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
     let ready = false
 
     const tilt = { x: 0, y: 0 }
+    // The sun follows the pointer; when idle it drifts through the upper sky.
+    const sun = { x: 0.72, y: 0.16, strength: 0 }
     const pointer = { x: 0, y: 0, lastMove: -Infinity }
     const coarse = window.matchMedia("(pointer: coarse)").matches
     const start = performance.now()
@@ -267,19 +322,33 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
       if (!ready) return
       const now = performance.now()
       const t = reduceMotion ? 10 : (now - start) / 1000
-      const active = now - pointer.lastMove < 4000 && !coarse
+      const active = now - pointer.lastMove < (coarse ? 6000 : 4000)
+      const px = pointer.x / Math.max(canvas.clientWidth, 1)
+      const py = pointer.y / Math.max(canvas.clientHeight, 1)
 
       let tiltX = 0
       let tiltY = 0
+      let sunX = 0.72
+      let sunY = 0.16
       if (active) {
-        tiltX = (pointer.x / Math.max(canvas.clientWidth, 1)) * 2 - 1
-        tiltY = (pointer.y / Math.max(canvas.clientHeight, 1)) * 2 - 1
+        if (!coarse) {
+          tiltX = px * 2 - 1
+          tiltY = py * 2 - 1
+        }
+        sunX = px
+        sunY = py
       } else if (!reduceMotion) {
         tiltX = Math.sin(t * 0.12) * 0.5
         tiltY = Math.sin(t * 0.08 + 0.8) * 0.3
+        sunX = 0.5 + 0.32 * Math.sin(t * 0.07 + 0.6)
+        sunY = 0.17 + 0.07 * Math.sin(t * 0.05)
       }
       tilt.x += (tiltX - tilt.x) * 0.05
       tilt.y += (tiltY - tilt.y) * 0.05
+      const sunEase = active ? 0.12 : 0.02
+      sun.x += (sunX - sun.x) * sunEase
+      sun.y += (sunY - sun.y) * sunEase
+      sun.strength += (1 - sun.strength) * 0.03
 
       // Slow settle from a slight zoom on load.
       const settle = 1 - Math.exp(-t / 1.4)
@@ -290,6 +359,8 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
       gl.uniform2f(uniforms.tilt, tilt.x, tilt.y)
       gl.uniform1f(uniforms.zoom, zoom)
       gl.uniform1f(uniforms.time, t)
+      gl.uniform2f(uniforms.sun, sun.x, sun.y)
+      gl.uniform1f(uniforms.sunStrength, reduceMotion ? 1 : sun.strength)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
     }
 
@@ -300,9 +371,14 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
 
     const onPointerMove = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect()
-      pointer.x = event.clientX - rect.left
-      pointer.y = event.clientY - rect.top
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      // Ignore movement outside the hero (for example after scrolling down).
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return
+      pointer.x = x
+      pointer.y = y
       pointer.lastMove = performance.now()
+      if (reduceMotion) render()
     }
 
     Promise.all([loadImage(imageUrl), loadImage(blurUrl), document.fonts.load(`400 100px ${fontFamily}`).catch(() => undefined)])
@@ -338,8 +414,10 @@ export function HeroCanvas({ imageUrl, blurUrl, name, fontFamily, reduceMotion, 
     }
     canvas.addEventListener("webglcontextlost", onContextLost)
     window.addEventListener("pointermove", onPointerMove, { passive: true })
+    window.addEventListener("pointerdown", onPointerMove, { passive: true })
 
     return () => {
+      window.removeEventListener("pointerdown", onPointerMove)
       disposed = true
       cancelAnimationFrame(frame)
       resizeObserver.disconnect()

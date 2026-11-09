@@ -8,9 +8,16 @@ export const profile = {
   tagline: "Aerospace engineering student at Texas A&M.",
   subline: "I study how turbulence distorts laser beams, and I lead an ISS payload capstone team.",
   github: "https://github.com/RithvikV-Tamu",
-  linkedin: "",
-  email: "",
-  resume: "",
+  linkedin: "https://www.linkedin.com/in/rithvik-vootukur",
+  emails: [
+    { label: "School email", address: "rithvik_v@tamu.edu" },
+    { label: "Personal email", address: "vootukur.r@gmail.com" },
+  ],
+  // PDFs in public/resume/. Copy updated versions from C:\Projects\Resumes.
+  resumes: [
+    { label: "Aerospace resume", short: "Resume", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Aerospace_Resume.pdf` },
+    { label: "Curriculum vitae", short: "CV", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Curriculum_Vitae.pdf` },
+  ],
 }
 
 export const about = {

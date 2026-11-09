@@ -1,6 +1,6 @@
-import { Search } from "lucide-react"
+import { FileText, Search } from "lucide-react"
 import { motion, useScroll } from "motion/react"
-import { stages } from "@/content/site"
+import { profile, stages } from "@/content/site"
 import { cn } from "@/lib/utils"
 
 interface TopNavProps {
@@ -45,16 +45,32 @@ export function TopNav({ activeIndex, onOpenSearch }: TopNavProps) {
           })}
         </nav>
 
-        <button
-          type="button"
-          onClick={onOpenSearch}
-          className="flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Search className="h-4 w-4" aria-hidden="true" />
-          <span className="md:hidden">Menu</span>
-          <span className="hidden md:inline">Jump to</span>
-          <kbd className="hidden rounded bg-white/10 px-1.5 font-mono text-[10px] md:inline">Ctrl K</kbd>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Resume PDFs, always one click away */}
+          {profile.resumes.map((resume) => (
+            <a
+              key={resume.href}
+              href={resume.href}
+              target="_blank"
+              rel="noreferrer"
+              title={resume.label}
+              className="flex items-center gap-1.5 rounded-md border border-sunlight/40 bg-sunlight/10 px-2.5 py-1.5 text-sm text-foreground transition-colors hover:bg-sunlight/20"
+            >
+              <FileText className="h-3.5 w-3.5 text-sunlight" aria-hidden="true" />
+              {resume.short}
+            </a>
+          ))}
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="flex items-center gap-2 rounded-md border border-white/10 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Search className="h-4 w-4" aria-hidden="true" />
+            <span className="max-sm:sr-only md:hidden">Menu</span>
+            <span className="hidden md:inline">Jump to</span>
+            <kbd className="hidden rounded bg-white/10 px-1.5 font-mono text-[10px] lg:inline">Ctrl K</kbd>
+          </button>
+        </div>
       </div>
       {/* Scroll progress along the bottom edge of the bar */}
       <motion.div

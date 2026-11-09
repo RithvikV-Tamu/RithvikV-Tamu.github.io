@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { ArrowDown } from "lucide-react"
 import { HeroCanvas } from "@/components/hero/hero-canvas"
@@ -30,6 +30,15 @@ export function LaunchHero() {
   const upperName = useMemo(() => profile.name.toUpperCase(), [])
   const onReady = useCallback(() => setShaderReady(true), [])
   const onFail = useCallback(() => setShaderFailed(true), [])
+  const [hintVisible, setHintVisible] = useState(true)
+  const [touch] = useState(() => window.matchMedia("(pointer: coarse)").matches)
+
+  // Hide the hint after the first move (or tap) over the hero.
+  useEffect(() => {
+    const hide = () => setHintVisible(false)
+    window.addEventListener(touch ? "pointerdown" : "pointermove", hide, { once: true })
+    return () => window.removeEventListener(touch ? "pointerdown" : "pointermove", hide)
+  }, [touch])
 
   const { scrollYProgress: p } = useScroll({ target: section, offset: ["start start", "end start"] })
   const contentShift = useTransform(p, [0, 1], ["0%", "26%"])
@@ -74,6 +83,18 @@ export function LaunchHero() {
       </motion.div>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/70 to-transparent" />
+
+      {/* Hint for the sun interaction, gone after the first move */}
+      {shaderReady && !shaderFailed && (
+        <p
+          className={cn(
+            "pointer-events-none absolute inset-x-0 top-[38%] text-center font-mono text-[11px] tracking-[0.3em] text-black/60 uppercase transition-opacity duration-700 sm:top-[33%]",
+            hintVisible ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {touch ? "Tap the sky to move the sun" : "Move your cursor to steer the sun"}
+        </p>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-background via-background/75 to-transparent" />
 
       {/* Data strip: the key facts, visible right away */}

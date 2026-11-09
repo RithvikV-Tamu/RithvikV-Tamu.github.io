@@ -36,13 +36,15 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
   function openLink(url: string) {
     onOpenChange(false)
-    window.open(url, "_blank", "noreferrer")
+    if (url.startsWith("mailto:")) window.location.href = url
+    else window.open(url, "_blank", "noreferrer")
   }
 
   const links = [
+    ...profile.resumes.map((resume) => ({ label: resume.label, url: resume.href })),
+    ...profile.emails.map((email) => ({ label: `Email ${email.address}`, url: `mailto:${email.address}` })),
     { label: "GitHub profile", url: profile.github },
     { label: "LinkedIn", url: profile.linkedin },
-    { label: "Resume", url: profile.resume },
     ...moreWork.filter((item) => item.href).map((item) => ({ label: `${item.name} code`, url: item.href! })),
   ].filter((link) => link.url)
 
