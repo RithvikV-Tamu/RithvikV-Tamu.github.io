@@ -1,8 +1,18 @@
-@AGENTS.md
-
 # Portfolio site (GitHub Pages)
 
-New portfolio, rebuilt from scratch in Astro. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.io`, served at https://rithvikv-tamu.github.io. Pushing to `main` deploys automatically through `.github/workflows/deploy.yml`.
+One-page interactive portfolio. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.io`, served at https://rithvikv-tamu.github.io. Pushing to `main` lints, builds and deploys through `.github/workflows/deploy.yml`.
+
+## Stack
+
+- Vite + React + TypeScript + Tailwind CSS v4 + shadcn/ui (Radix base, Nova preset). Run commands are in `README.md`.
+- UI components come mainly from 21st.dev, installed with `npx shadcn@latest add "<21st.dev registry URL>"` into `src/components/ui/`. Replace Next.js-only imports (`next/image`, `next/link`, `"use client"`). Check each component's license.
+- Build physics demos (beam, airfoil, nozzle, orbits) myself in plain TypeScript so they are accurate. Use 21st.dev for layout and motion.
+- `@/` maps to `src/`. The site is always dark (`class="dark"` on `<html>`).
+- Must stay a static build. No server code, no secrets in client code.
+
+## Page concept
+
+"Mission profile" scroll from launch to orbit with a side altitude gauge: hero, about, featured work (sticky-scroll chapters with small live demos), more work (bento grid), toolkit, timeline, contact. Ctrl+K command palette to jump to projects. Respect `prefers-reduced-motion` and keep everything usable without animation.
 
 ## This repo is public
 
@@ -14,13 +24,13 @@ Everything committed here is visible to anyone. Never commit private research da
 - `public/resume/Rithvik_Vootukur_Master.pdf`: approved resume. Ask before publishing it here, because it contains contact details.
 - `public/media/projects/gateways-vtol/`: Blue Skies report and figures (provenance in `docs/BLUE_SKIES_SOURCES.md`).
 - `public/media/site/`: NASA Blue Marble Earth images. Keep the visible NASA credit (`docs/EARTH_IMAGERY.md`).
-- Earlier design direction was a dark, cinematic space theme with a centered draggable Earth and orbiting project satellites. Treat it as a reference, not a requirement, unless I say so.
 
 ## Content rules
 
-- Featured projects: TACL research, TAMU-SPIRIT 2, Blue Skies search-and-rescue UAV, aircraft design.
+- Featured: TACL research, TAMU-SPIRIT 2, Blue Skies search-and-rescue UAV, aircraft design. Candidates for "more work": RS-25 nozzle solver, orbital mechanics, structures/FEA, numerical heat transfer, bearing fault ML, Organization Bot, Personal Dashboard, ETF Research.
+- TACL: RIPTIDE is proprietary. Only show real results Prof. Donzis has approved; otherwise use a clearly labeled generic illustration.
+- Homework-based demos need a course-policy check before publishing.
+- Dashboard and ETF Research handle private accounts. Show demo data only.
 - Do not invent roles, numbers, results or awards. Separate my work from team work, proposals from achieved results, and simulations from physical tests.
 - Do not claim TAMU-SPIRIT hardware has flown. Blue Skies was a completed proposal, not a built drone, and was not selected.
 - If a section has no real content yet, leave it out.
-- Keep dependencies minimal. No invasive analytics, scroll-jacking or heavy animation.
-- Commit and push only when I ask. Pushing to `main` publishes the site.
