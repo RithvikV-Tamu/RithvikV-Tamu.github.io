@@ -28,15 +28,35 @@ export const about = {
 
 // Mission stages drive the side altitude gauge and section labels.
 // Altitudes are decorative, not data.
+// Sections are ordered by importance: work first, then supporting detail.
 export const stages = [
   { id: "launch", label: "Launch", altitudeKm: 0, nav: "Top" },
-  { id: "about", label: "Ascent", altitudeKm: 12, nav: "About" },
   { id: "work", label: "Orbit insertion", altitudeKm: 100, nav: "Work" },
-  { id: "more", label: "Cruise", altitudeKm: 220, nav: "More" },
-  { id: "toolkit", label: "Telemetry", altitudeKm: 300, nav: "Toolkit" },
-  { id: "timeline", label: "Flight log", altitudeKm: 360, nav: "Timeline" },
+  { id: "more", label: "Cruise", altitudeKm: 200, nav: "More" },
+  { id: "about", label: "Crew", altitudeKm: 260, nav: "About" },
+  { id: "toolkit", label: "Telemetry", altitudeKm: 320, nav: "Toolkit" },
+  { id: "timeline", label: "Flight log", altitudeKm: 370, nav: "Timeline" },
   { id: "contact", label: "Downlink", altitudeKm: 400, nav: "Contact" },
 ] as const
+
+// Flight events shown during the launch, each paired with a fact.
+// `at` is the point in the launch scroll (0 to 1) where the event starts.
+export const flightEvents = [
+  { at: 0.1, label: "Ignition", detail: "Aerospace Engineering, Texas A&M University" },
+  { at: 0.22, label: "Liftoff", detail: "B.S. expected May 2027 · Engineering Honors" },
+  { at: 0.4, label: "Max-Q", detail: "Research assistant, Turbulence and Advanced Computations Laboratory" },
+  { at: 0.53, label: "MECO", detail: "300+ laser propagation simulations run" },
+  { at: 0.65, label: "Stage sep", detail: "Team lead and editor, TAMU-SPIRIT 2 requirements review" },
+  { at: 0.78, label: "Orbit", detail: "Featured work below" },
+]
+
+// Short facts used to fill space between sections.
+export const quickStats = [
+  { value: "300+", label: "turbulence propagation simulations" },
+  { value: "6", label: "person team led for NASA Gateways to Blue Skies" },
+  { value: "30+", label: "students tutored, 300+ hours" },
+  { value: "2027", label: "B.S. Aerospace Engineering, May" },
+]
 
 export type VisualKind = "beam" | "conops" | "image" | "airfoil"
 

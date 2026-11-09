@@ -13,7 +13,9 @@ One-page interactive portfolio. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.
 
 ## Page concept
 
-"Mission profile" scroll from launch to orbit with a side altitude gauge: hero, about, featured work (sticky-scroll chapters with small live demos), more work (bento grid), toolkit, timeline, contact. Ctrl+K command palette to jump to projects. Respect `prefers-reduced-motion` and keep everything usable without animation.
+"Mission profile" scroll from launch to orbit with a side altitude gauge. Sections in order of importance: launch hero, featured work, quick stats, more work, about, toolkit, timeline, contact. Ctrl+K command palette to jump to projects. Respect `prefers-reduced-motion` and keep everything usable without animation.
+
+Hero: photographic, not 3D. I rejected a procedural Three.js rocket (kept on branch `experiment/3d-rocket-hero`) and want hyper-realistic 4K+ photography instead. The hero uses NASA Artemis I and ISS photos (credits in `docs/PHOTO_CREDITS.md`): my name sits between the pad photo and a cutout of the lit rocket, with cursor parallax, then scroll cross-fades through liftoff, ascent and orbital sunrise with flight-event callouts. Keep the "Photos: NASA ... Not affiliated with NASA" line visible. Ask before downloading new images.
 
 ## This repo is public
 

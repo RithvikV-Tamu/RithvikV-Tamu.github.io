@@ -6,8 +6,9 @@ import { TopNav } from "@/components/layout/top-nav"
 import { About } from "@/components/sections/about"
 import { Contact } from "@/components/sections/contact"
 import { FeaturedWork } from "@/components/sections/featured-work"
-import { Hero } from "@/components/sections/hero"
+import { LaunchHero } from "@/components/sections/launch-hero"
 import { MoreWork } from "@/components/sections/more-work"
+import { StatsStrip } from "@/components/sections/stats-strip"
 import { TimelineSection } from "@/components/sections/timeline-section"
 import { Toolkit } from "@/components/sections/toolkit"
 import { useMissionScroll } from "@/hooks/use-mission-scroll"
@@ -22,10 +23,11 @@ function App() {
       <AltitudeGauge activeIndex={activeIndex} altitudeKm={altitudeKm} />
       <CommandMenu open={searchOpen} onOpenChange={setSearchOpen} />
       <main>
-        <Hero />
-        <About />
+        <LaunchHero />
         <FeaturedWork />
+        <StatsStrip />
         <MoreWork />
+        <About />
         <Toolkit />
         <TimelineSection />
         <Contact />

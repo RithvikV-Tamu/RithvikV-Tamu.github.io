@@ -46,7 +46,15 @@ After installing:
 3. Check the component's license.
 4. Watch for heavy extras (some pull in Three.js). Remove anything the page does not need.
 
-Adapted components in this repo: Timeline, Card Spotlight, Stars Background, Shooting Stars (Aceternity UI, MIT) and Bento Grid (Magic UI, MIT).
+Adapted components in this repo: Timeline and Card Spotlight (Aceternity UI, MIT) and Bento Grid (Magic UI, MIT).
+
+## Hero photos
+
+The launch sequence uses four NASA photos (credits, sources and how to regenerate the web files are in `docs/PHOTO_CREDITS.md`). Originals live in the git-ignored `.local/originals/`. Web versions are made with:
+
+```powershell
+node scripts/prepare-photos.mjs
+```
 
 ## Layout
 
