@@ -6,7 +6,7 @@ import { Photo } from "@/components/photo"
 import { heroFacts, profile } from "@/content/site"
 import { cn } from "@/lib/utils"
 
-const FONT_FAMILY = '"Michroma", "Geist Variable", sans-serif'
+const FONT_FAMILY = '"Saira Stencil One", "Geist Variable", sans-serif'
 
 const photoBase = `${import.meta.env.BASE_URL}media/photos/`
 const blurUrl = `${photoBase}jet-twilight-blur.webp`
@@ -61,7 +61,7 @@ export function LaunchHero() {
             priority
           />
           <div className="absolute inset-x-0 top-[24%] -translate-y-1/2 px-4 text-center sm:top-[22%]">
-            <p className="font-display text-[8vw] leading-[1.15] tracking-[0.08em] text-[#120c08] [text-shadow:0_0_2px_rgba(255,200,130,0.9)] sm:text-[5.6vw]">
+            <p className="font-display text-[8vw] leading-[1.15] tracking-[0.05em] text-[#120c08] [text-shadow:0_0_2px_rgba(255,200,130,0.9)] sm:text-[5.6vw]">
               {upperName}
             </p>
           </div>

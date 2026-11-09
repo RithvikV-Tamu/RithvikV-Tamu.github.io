@@ -195,7 +195,7 @@ function drawNameMask(width: number, height: number, name: string, fontFamily: s
     let fontSize = portrait ? width * 0.13 : height * 0.11
     const setFont = () => {
       ctx.font = `400 ${fontSize}px ${fontFamily}`
-      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.08}px`
+      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.05}px`
     }
     setFont()
     const widest = () => Math.max(...lines.map((line) => ctx.measureText(line).width))
