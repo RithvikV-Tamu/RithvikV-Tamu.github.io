@@ -64,6 +64,8 @@ node scripts/prepare-photos.mjs
 | `src/content/site.ts` | All page text, links, project data and photo captions. |
 | `src/components/sections/` | One file per page section. |
 | `src/components/photo.tsx` | Responsive AVIF/WebP photo from `public/media/photos/`. |
+| `src/components/demos/` | Interactive project cards: turbulence beam, CONOPS stepper, airfoil explorer. |
+| `src/lib/naca.ts` | NACA 4-digit geometry and thin airfoil theory used by the airfoil explorer. |
 | `scripts/prepare-photos.mjs` | Makes the web photo files and the rocket cutout. |
 | `src/components/ui/` | shadcn and 21st.dev components. |
 | `src/lib/utils.ts` | The `cn()` class-name helper used by shadcn components. |

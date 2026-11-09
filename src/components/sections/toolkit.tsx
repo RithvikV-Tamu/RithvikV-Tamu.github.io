@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Reveal } from "@/components/reveal"
 import { SectionHeading } from "@/components/section-heading"
-import { toolkit } from "@/content/site"
+import { sectionIntros, toolkit } from "@/content/site"
 import { cn } from "@/lib/utils"
 
 // Tools grouped by area. Hovering or focusing a tool shows where it was used.
@@ -10,7 +10,7 @@ export function Toolkit() {
 
   return (
     <section id="toolkit" className="mx-auto max-w-6xl px-6 py-28">
-      <SectionHeading stageId="toolkit" title="Toolkit" intro="Hover or tab to a tool to see where I used it." />
+      <SectionHeading stageId="toolkit" title="Toolkit" intro={sectionIntros.toolkit} />
       <Reveal className="grid gap-10 lg:grid-cols-[2fr_1fr]">
         <div className="grid gap-8 sm:grid-cols-2">
           {toolkit.map((group) => (

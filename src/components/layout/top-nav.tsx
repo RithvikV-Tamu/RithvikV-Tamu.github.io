@@ -1,4 +1,5 @@
 import { Search } from "lucide-react"
+import { motion, useScroll } from "motion/react"
 import { stages } from "@/content/site"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +12,7 @@ const navStages = stages.filter((stage) => stage.id !== "launch")
 
 export function TopNav({ activeIndex, onOpenSearch }: TopNavProps) {
   const scrolled = activeIndex > 0
+  const { scrollYProgress } = useScroll()
 
   return (
     <header
@@ -54,6 +56,12 @@ export function TopNav({ activeIndex, onOpenSearch }: TopNavProps) {
           <kbd className="hidden rounded bg-white/10 px-1.5 font-mono text-[10px] md:inline">Ctrl K</kbd>
         </button>
       </div>
+      {/* Scroll progress along the bottom edge of the bar */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-px origin-left bg-gradient-to-r from-sunlight to-atmosphere"
+        style={{ scaleX: scrollYProgress }}
+      />
     </header>
   )
 }

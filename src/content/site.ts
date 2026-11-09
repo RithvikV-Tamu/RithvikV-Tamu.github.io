@@ -1,12 +1,12 @@
 // All site text and links live here. Edit this file to change what the page says.
-// Wording is a first draft from Rithvik's own notes and repo descriptions.
-// Replace it with answers from the content template when they are ready.
+// The wording is built only from facts in Rithvik's own notes and repo
+// descriptions. Swap in his own phrasing from the content template when ready.
 // Leave a field as "" to hide it on the page.
 
 export const profile = {
   name: "Rithvik Vootukur",
-  tagline: "Aerospace engineering student at Texas A&M University.",
-  subline: "Research assistant in the Turbulence and Advanced Computations Laboratory.",
+  tagline: "Aerospace engineering student at Texas A&M.",
+  subline: "I study how turbulence distorts laser beams, and I lead an ISS payload capstone team.",
   github: "https://github.com/RithvikV-Tamu",
   linkedin: "",
   email: "",
@@ -15,13 +15,14 @@ export const profile = {
 
 export const about = {
   paragraphs: [
-    "I'm pursuing a B.S. in Aerospace Engineering at Texas A&M University. I work as a research assistant in Prof. Diego Donzis's Turbulence and Advanced Computations Laboratory, and I'm on the TAMU-SPIRIT 2 ISS payload capstone team.",
-    "My strongest work combines aerospace engineering with scientific programming, simulation with physical interpretation, and CAD with trade studies.",
+    "I study Aerospace Engineering at Texas A&M and graduate in May 2027.",
+    "Most of my time goes to two projects. In Prof. Diego Donzis's Turbulence and Advanced Computations Laboratory, I run simulations of laser beams passing through turbulent air. On the TAMU-SPIRIT 2 capstone, I'm team lead for a payload designed for the International Space Station.",
+    "The work I'm best at sits between code and physics: setting up the runs, processing the output, and explaining what the plot actually shows. I also do CAD and trade studies, and I've tutored more than 30 students.",
   ],
   facts: [
     { label: "Degree", value: "B.S. Aerospace Engineering" },
     { label: "School", value: "Texas A&M University, Engineering Honors" },
-    { label: "Expected graduation", value: "May 2027" },
+    { label: "Graduating", value: "May 2027" },
     { label: "Research", value: "TACL, Prof. Diego Donzis" },
   ],
 }
@@ -39,24 +40,32 @@ export const stages = [
   { id: "contact", label: "Downlink", altitudeKm: 400, nav: "Contact" },
 ] as const
 
+export const sectionIntros = {
+  work: "Four projects, most important first.",
+  more: "Smaller projects: solvers, machine learning and tools I built for myself.",
+  toolkit: "Hover or tap a tool to see where I've used it.",
+  contact: "The fastest way to reach me is below.",
+}
+
 // Short facts shown in the data strip along the bottom of the hero.
 export const heroFacts = [
-  { label: "Studying", detail: "Aerospace Engineering, Texas A&M University" },
+  { label: "Studying", detail: "Aerospace Engineering, Texas A&M" },
   { label: "Graduating", detail: "May 2027 · Engineering Honors" },
-  { label: "Research", detail: "Laser propagation through turbulence, TACL" },
-  { label: "Leading", detail: "TAMU-SPIRIT 2 ISS payload requirements review" },
+  { label: "Research", detail: "Laser beams through turbulence, TACL" },
+  { label: "Leading", detail: "TAMU-SPIRIT 2, an ISS payload capstone" },
 ]
 
-// Short facts used to fill space between sections.
+// Short facts between the featured work and the rest of the page.
+// `count` is the number to animate up to; `suffix` follows it.
 export const quickStats = [
-  { value: "300+", label: "turbulence propagation simulations" },
-  { value: "6", label: "person team led for NASA Gateways to Blue Skies" },
-  { value: "30+", label: "students tutored, 300+ hours" },
-  { value: "2027", label: "B.S. Aerospace Engineering, May" },
+  { count: 300, suffix: "+", label: "laser propagation simulations run" },
+  { count: 6, suffix: "", label: "students on the Blue Skies team I led" },
+  { count: 30, suffix: "+", label: "students tutored, over 300 hours" },
+  { count: 2027, suffix: "", label: "graduating with a B.S., in May" },
 ]
 
-// Insets are small cards shown on top of a project's photo panel.
-export type InsetKind = "conops" | "image" | "airfoil"
+// Interactive or static cards shown on a project's photo panel.
+export type InsetKind = "beam" | "conops" | "image" | "airfoil"
 
 // Background photo for a project panel (files in public/media/photos/).
 // These are representative images, not photos of Rithvik's own hardware.
@@ -86,43 +95,45 @@ export interface FeaturedProject {
 export const featured: FeaturedProject[] = [
   {
     id: "tacl",
-    title: "Laser beam propagation through turbulence",
+    title: "Laser beams through turbulence",
     category: "Computational research",
     dates: "June 2026 to present",
-    role: "Research assistant, TACL (Prof. Diego Donzis)",
+    role: "Research assistant, TACL · Prof. Diego Donzis",
     summary:
-      "I study how small-scale atmospheric turbulence affects Gaussian laser beams, focusing on scintillation (irradiance fluctuation) and beam wander. The goal is to find which turbulence scales matter and how that changes with propagation distance, focusing, beam size, wavelength and turbulence strength.",
+      "Turbulent air makes a laser beam flicker and drift. I study which sizes of turbulent eddies cause it, and how that changes with distance, focusing, beam size, wavelength and turbulence strength.",
     points: [
-      "Set up controlled, multi-parameter sweeps with the lab's RIPTIDE propagation code",
-      "Run cases on Linux and process the HDF5 output in Python",
-      "Make figures for lab discussions",
-      "300+ simulations run",
+      "Design controlled parameter sweeps for the lab's RIPTIDE propagation code",
+      "Run the cases on the lab's Linux server and process the HDF5 output in Python",
+      "Turn the results into figures for lab meetings",
+      "300+ simulations so far",
     ],
     tools: ["Python", "NumPy", "Matplotlib", "HDF5", "Linux"],
     status: "Ongoing",
     photo: {
       name: "tacl-lasers",
       alt: "Four orange laser beams shooting from a telescope dome into a starry sky",
-      caption: "Representative image: laser guide stars at ESO's Very Large Telescope, used to measure and correct atmospheric turbulence. Credit: ESO/F. Kamphues (CC BY 4.0)",
+      caption:
+        "Representative image: laser guide stars at ESO's Very Large Telescope, used to measure and correct atmospheric turbulence. Credit: ESO/F. Kamphues (CC BY 4.0)",
       position: "68% 55%",
       textSide: "left",
     },
+    inset: "beam",
   },
   {
     id: "spirit",
-    title: "TAMU-SPIRIT 2: ISS payload capstone",
+    title: "TAMU-SPIRIT 2: an ISS payload",
     category: "Spacecraft systems",
     dates: "Fall 2026 to present",
     role: "Team lead and editor, system requirements review",
     summary:
-      "Senior capstone designing experiments for a nominal six-month exposure on the International Space Station. Experiments are built and tested at Texas A&M, integrated into a payload carrier, launched, installed on the station and returned to the principal investigator.",
+      "Our senior capstone is designing experiments for about six months of exposure on the International Space Station. Step through the mission plan below.",
     points: [
-      "Led and edited the system requirements review",
-      "Wrote the General Passive Exposure sections: scope and operations, requirements and verification",
-      "Battery and power trade studies for the PACT experiment",
+      "Led the team and edited the system requirements review",
+      "Wrote the passive exposure sections: scope, operations, requirements and verification",
+      "Ran battery and power trade studies for the PACT experiment",
     ],
     tools: ["Requirements", "Trade studies", "Excel", "LaTeX"],
-    status: "In design. No hardware has flown.",
+    status: "In design. Nothing has flown yet.",
     photo: {
       name: "spirit-misse",
       alt: "Materials exposure sample trays mounted on the outside of the International Space Station",
@@ -134,20 +145,20 @@ export const featured: FeaturedProject[] = [
   },
   {
     id: "blue-skies",
-    title: "Search-and-rescue UAV concept",
+    title: "Search-and-rescue drone concept",
     category: "NASA Gateways to Blue Skies",
     dates: "2023 to 2024",
     role: "Team lead, six-person team",
     summary:
-      "A conceptual UAV for finding victims after natural disasters, proposed for NASA's 2024 Gateways to Blue Skies competition. I originated the spherical protective roll-cage concept and handled the team's graphics and materials research.",
+      "For NASA's 2024 Gateways to Blue Skies competition, our team proposed a drone for finding people after natural disasters. I came up with its spherical protective roll cage, led the team, and handled the graphics and materials research.",
     points: [
-      "Coordinated weekly work, schedules and subsystem assignments",
-      "SolidWorks geometry, sizing and weight estimates",
-      "Materials comparisons and Blender renders",
-      "14-page proposal and a roughly 20-minute presentation",
+      "Ran weekly coordination, schedules and subsystem assignments",
+      "Modeled the cage in SolidWorks and estimated its size and weight",
+      "Compared structural materials and made the Blender renders",
+      "Delivered a 14-page proposal and a 20-minute presentation",
     ],
     tools: ["SolidWorks", "Blender", "Pugh charts"],
-    status: "Concept proposal, completed",
+    status: "Proposal completed. A concept, never built.",
     photo: {
       name: "blue-skies-hurricane",
       alt: "A hurricane seen from the International Space Station",
@@ -158,18 +169,18 @@ export const featured: FeaturedProject[] = [
     inset: "image",
     image: {
       src: "blue-skies-roll-cage",
-      alt: "Render of a quadrotor UAV inside a spherical protective cage",
-      caption: "Concept render from the team proposal. Not a built prototype.",
+      alt: "Render of a quadrotor drone inside a spherical protective cage",
+      caption: "Concept render from our team proposal. Not a built prototype.",
     },
   },
   {
     id: "aircraft",
-    title: "Sailplane wing and airfoil studies",
+    title: "Sailplane wing and airfoil study",
     category: "Aircraft design",
     dates: "",
     role: "",
     summary:
-      "I built a parametric SolidWorks wing and surrounding aircraft geometry for an AS 35 Mi sailplane and compared glider airfoil configurations.",
+      "I built a parametric SolidWorks model of an AS 35 Mi sailplane wing and the aircraft around it, then compared glider airfoils for it. Try the airfoil explorer below.",
     points: [],
     tools: ["SolidWorks"],
     status: "",
@@ -182,6 +193,16 @@ export const featured: FeaturedProject[] = [
     },
     inset: "airfoil",
   },
+]
+
+// Mission plan for the TAMU-SPIRIT 2 loop, clockwise from Earth.
+export const conopsSteps = [
+  { label: "Build and test", detail: "Experiments are built and tested at Texas A&M." },
+  { label: "Integrate", detail: "The experiments are loaded into a payload carrier." },
+  { label: "Launch", detail: "The carrier launches to the station on a Falcon 9." },
+  { label: "Install on ISS", detail: "After docking, the robotic arm unloads the carrier and installs it outside." },
+  { label: "~6 months exposure", detail: "Samples sit outside the station for a nominal six months." },
+  { label: "Return to PI", detail: "The carrier is reloaded, reenters, splashes down and goes back to the researchers." },
 ]
 
 export type MoreIcon = "nozzle" | "heat" | "wave" | "bot" | "dashboard" | "chart"
@@ -200,7 +221,7 @@ export const moreWork: MoreProject[] = [
     name: "RS-25 nozzle solver",
     meta: "Python · Compressible flow",
     description:
-      "1-D isentropic nozzle flow solver for an approximate RS-25 nozzle, using the area-Mach relation and Brent root finding, compared with public RS-25 data.",
+      "Solves 1-D isentropic flow through an approximate RS-25 nozzle with the area-Mach relation and Brent root finding, then compares the results with public RS-25 data.",
     icon: "nozzle",
     href: "https://github.com/RithvikV-Tamu/rs25-nozzle-solver",
     size: "wide",
@@ -209,7 +230,7 @@ export const moreWork: MoreProject[] = [
     name: "Heat transfer solvers",
     meta: "Python · Numerical methods",
     description:
-      "1-D steady conduction solvers: 2nd and 4th-order finite differences and p=1, p=2 finite elements, with penalty boundary conditions, material interfaces and Richardson convergence checks.",
+      "1-D conduction with finite differences (2nd and 4th order) and finite elements (p=1, p=2), checked with Richardson convergence studies.",
     icon: "heat",
     href: "https://github.com/RithvikV-Tamu/heat-transfer-solvers",
     size: "normal",
@@ -218,7 +239,7 @@ export const moreWork: MoreProject[] = [
     name: "Bearing fault classification",
     meta: "Python · Machine learning",
     description:
-      "Classifies Case Western Reserve University bearing vibration data with FFT features, logistic regression and a PyTorch MLP, using leak-free splits.",
+      "Sorts bearing vibration data into normal and three fault types using FFT features, logistic regression and a PyTorch neural network.",
     icon: "wave",
     href: "https://github.com/RithvikV-Tamu/bearing-fault-classification",
     size: "normal",
@@ -227,21 +248,21 @@ export const moreWork: MoreProject[] = [
     name: "Organization Bot",
     meta: "Python · Automation",
     description:
-      "Turns my capstone team's Discord conversations into a shared Google Sheets task tracker. GitHub Actions collects messages and a local Ollama model extracts tasks. Manual edits survive later runs.",
+      "Turns my capstone team's Discord chat into a shared Google Sheets task tracker. A local AI model reads the messages, and manual edits are never overwritten.",
     icon: "bot",
     size: "wide",
   },
   {
     name: "Personal Dashboard",
     meta: "Tauri · React · Rust",
-    description: "Private Windows desktop app for classes, exams, calendar, read-only Gmail triage, sports and news.",
+    description: "A private Windows app for my classes, exams, calendar, mail, sports and news.",
     icon: "dashboard",
     size: "normal",
   },
   {
     name: "ETF Research",
     meta: "Next.js · TypeScript",
-    description: "Private end-of-day ETF research tool with standard measurements, a scanner and a watchlist. Built for my own use, including on iPhone.",
+    description: "A private ETF research tool with a scanner and watchlist that I use daily, including on my phone.",
     icon: "chart",
     size: "wide",
   },
@@ -298,27 +319,27 @@ export const toolkit: ToolGroup[] = [
 export const timeline = [
   {
     title: "2022",
-    heading: "Tutoring",
-    text: "Started volunteering at a tutoring center for younger students, and later tutored privately and through Texas A&M's HELP program. 30+ students and 300+ hours.",
+    heading: "Started tutoring",
+    text: "Volunteered at a tutoring center, then tutored privately and through Texas A&M's HELP program. More than 30 students and 300 hours so far.",
   },
   {
     title: "2023",
     heading: "NASA Gateways to Blue Skies",
-    text: "Led a six-person team through a conceptual search-and-rescue UAV proposal for the 2024 competition.",
+    text: "Led a six-person team through a search-and-rescue drone proposal for the 2024 competition.",
   },
   {
     title: "Jun 2026",
     heading: "Joined TACL",
-    text: "Research assistant in Prof. Diego Donzis's lab, studying laser propagation through turbulence.",
+    text: "Became a research assistant in Prof. Diego Donzis's lab, simulating laser beams in turbulence.",
   },
   {
     title: "Fall 2026",
-    heading: "TAMU-SPIRIT 2 capstone",
-    text: "Team lead and editor for the system requirements review of an ISS payload capstone.",
+    heading: "TAMU-SPIRIT 2",
+    text: "Took on team lead and editor for the ISS payload capstone's system requirements review.",
   },
   {
     title: "May 2027",
-    heading: "Expected graduation",
-    text: "B.S. Aerospace Engineering, Texas A&M University.",
+    heading: "Graduation",
+    text: "B.S. in Aerospace Engineering from Texas A&M.",
   },
 ]

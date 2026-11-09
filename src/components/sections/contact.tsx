@@ -2,7 +2,7 @@ import { ArrowUpRight, FileText, Mail } from "lucide-react"
 import { GithubIcon, LinkedinIcon } from "@/components/brand-icons"
 import { Photo } from "@/components/photo"
 import { SectionHeading } from "@/components/section-heading"
-import { profile } from "@/content/site"
+import { profile, sectionIntros } from "@/content/site"
 
 const currentYear = new Date().getFullYear()
 
@@ -25,7 +25,7 @@ export function Contact() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background/70" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 pt-40 pb-16">
-        <SectionHeading stageId="contact" title="Contact" />
+        <SectionHeading stageId="contact" title="Contact" intro={sectionIntros.contact} />
         <ul className="grid max-w-2xl gap-3 sm:grid-cols-2">
           {links.map(({ label, href, text, Icon }) => (
             <li key={label}>

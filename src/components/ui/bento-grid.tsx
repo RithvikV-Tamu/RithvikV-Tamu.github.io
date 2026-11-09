@@ -44,16 +44,30 @@ const BentoCard = ({
     className={cn(
       "group relative col-span-3 flex flex-col justify-end overflow-hidden rounded-xl",
       "transform-gpu bg-white/[0.02] [border:1px_solid_rgba(255,255,255,.1)] [box-shadow:0_-20px_80px_-20px_#ffffff14_inset]",
+      "transition-colors duration-300 hover:[border-color:rgba(121,185,234,.35)]",
       className
     )}
+    onMouseMove={(event) => {
+      // Feed the cursor position to the glow layer below.
+      const rect = event.currentTarget.getBoundingClientRect()
+      event.currentTarget.style.setProperty("--glow-x", `${event.clientX - rect.left}px`)
+      event.currentTarget.style.setProperty("--glow-y", `${event.clientY - rect.top}px`)
+    }}
     {...props}
   >
     {background && <div className="absolute inset-0">{background}</div>}
+    {/* Cursor-following glow and a large faint icon for depth */}
+    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 [background:radial-gradient(320px_circle_at_var(--glow-x,50%)_var(--glow-y,50%),rgba(121,185,234,0.14),transparent_70%)]" />
+    <Icon
+      className="pointer-events-none absolute -top-6 -right-6 h-40 w-40 rotate-12 text-white/[0.035] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
+      aria-hidden="true"
+    />
     <div className="relative z-10 flex flex-col gap-1 p-5">
       <Icon className="mb-2 h-9 w-9 text-[#79b9ea]" aria-hidden="true" />
       {meta && <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">{meta}</p>}
-      <h3 className="text-xl font-semibold text-neutral-200">{name}</h3>
-      <p className="max-w-lg text-sm text-neutral-400">{description}</p>
+      <h3 className="text-xl font-semibold text-neutral-100">{name}</h3>
+      <p className="max-w-lg text-sm leading-relaxed text-neutral-400">{description}</p>
+      {!href && <p className="mt-2 font-mono text-[11px] text-white/40">Private repository</p>}
       {href && (
         <a
           href={href}

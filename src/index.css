@@ -144,6 +144,44 @@
   }
 }
 
+/* Slider styling for the interactive demos. */
+.range-input {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e8b97a;
+  border: 2px solid #05070d;
+  box-shadow: 0 0 0 1px #e8b97a, 0 0 12px rgba(232, 185, 122, 0.6);
+}
+
+.range-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e8b97a;
+  border: 2px solid #05070d;
+  box-shadow: 0 0 0 1px #e8b97a, 0 0 12px rgba(232, 185, 122, 0.6);
+}
+
+.range-input:focus-visible {
+  outline: 2px solid #79b9ea;
+  outline-offset: 4px;
+}
+
+.range-input:disabled {
+  cursor: not-allowed;
+}
+
 /* Animated film grain over the hero photos. Static for reduced motion. */
 .film-grain {
   opacity: 0.09;
