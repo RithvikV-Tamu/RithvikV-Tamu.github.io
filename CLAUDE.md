@@ -13,9 +13,15 @@ One-page interactive portfolio. Public repo `RithvikV-Tamu/RithvikV-Tamu.github.
 
 ## Page concept
 
-"Mission profile" scroll from launch to orbit with a side altitude gauge. Sections in order of importance: launch hero, featured work, quick stats, more work, about, toolkit, timeline, contact. Ctrl+K command palette to jump to projects. Respect `prefers-reduced-motion` and keep everything usable without animation.
+"Mission profile" scroll from launch to orbit with a side altitude gauge. Sections in order of importance: hero, featured work, quick stats, more work, about, toolkit, timeline, contact. Ctrl+K command palette to jump to projects. Respect `prefers-reduced-motion` and keep everything usable without animation.
 
-Hero: photographic, not 3D. I rejected a procedural Three.js rocket (kept on branch `experiment/3d-rocket-hero`) and want hyper-realistic 4K+ photography instead. The hero uses NASA Artemis I and ISS photos (credits in `docs/PHOTO_CREDITS.md`): my name sits between the pad photo and a cutout of the lit rocket, with cursor parallax, then scroll cross-fades through liftoff, ascent and orbital sunrise with flight-event callouts. Keep the "Photos: NASA ... Not affiliated with NASA" line visible. Ask before downloading new images.
+Visual style: hyper-realistic 4K+ photography, not 3D renders. I rejected a procedural Three.js rocket (kept on local branch `experiment/3d-rocket-hero`) and a pinned scroll launch sequence (too slow to reach the projects). Keep the path to the projects short.
+
+- Hero: one screen. NASA photo of Artemis I on the pad at night; my name sits between the photo and a cutout of the lit rocket, with cursor parallax. A facts strip runs along the bottom. Scrolling slides the photo slower than the page and fades straight into the featured work. No pinned sections.
+- Featured projects: full-width photo panels with parallax, text on a shaded side, and a caption saying the photo is representative and who to credit.
+- Contact: orbital sunrise photo.
+- Credits and sources: `docs/PHOTO_CREDITS.md`. Keep "Not affiliated with NASA" next to NASA credits and the full "ESO/F. Kamphues (CC BY 4.0)" credit on the TACL photo. Ask before downloading new images.
+- When editing files from PowerShell, don't use `Get-Content`/`Set-Content` on files with non-ASCII text (Windows PowerShell 5.1 garbles UTF-8 and adds a BOM). Use the editor tools or Node instead.
 
 ## This repo is public
 

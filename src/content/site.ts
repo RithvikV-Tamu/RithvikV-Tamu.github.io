@@ -39,15 +39,12 @@ export const stages = [
   { id: "contact", label: "Downlink", altitudeKm: 400, nav: "Contact" },
 ] as const
 
-// Flight events shown during the launch, each paired with a fact.
-// `at` is the point in the launch scroll (0 to 1) where the event starts.
-export const flightEvents = [
-  { at: 0.1, label: "Ignition", detail: "Aerospace Engineering, Texas A&M University" },
-  { at: 0.22, label: "Liftoff", detail: "B.S. expected May 2027 · Engineering Honors" },
-  { at: 0.4, label: "Max-Q", detail: "Research assistant, Turbulence and Advanced Computations Laboratory" },
-  { at: 0.53, label: "MECO", detail: "300+ laser propagation simulations run" },
-  { at: 0.65, label: "Stage sep", detail: "Team lead and editor, TAMU-SPIRIT 2 requirements review" },
-  { at: 0.78, label: "Orbit", detail: "Featured work below" },
+// Short facts shown in the data strip along the bottom of the hero.
+export const heroFacts = [
+  { label: "Studying", detail: "Aerospace Engineering, Texas A&M University" },
+  { label: "Graduating", detail: "May 2027 · Engineering Honors" },
+  { label: "Research", detail: "Laser propagation through turbulence, TACL" },
+  { label: "Leading", detail: "TAMU-SPIRIT 2 ISS payload requirements review" },
 ]
 
 // Short facts used to fill space between sections.
@@ -58,7 +55,18 @@ export const quickStats = [
   { value: "2027", label: "B.S. Aerospace Engineering, May" },
 ]
 
-export type VisualKind = "beam" | "conops" | "image" | "airfoil"
+// Insets are small cards shown on top of a project's photo panel.
+export type InsetKind = "conops" | "image" | "airfoil"
+
+// Background photo for a project panel (files in public/media/photos/).
+// These are representative images, not photos of Rithvik's own hardware.
+export interface PanelPhoto {
+  name: string
+  alt: string
+  caption: string
+  position: string
+  textSide: "left" | "right"
+}
 
 export interface FeaturedProject {
   id: string
@@ -70,7 +78,8 @@ export interface FeaturedProject {
   points: string[]
   tools: string[]
   status: string
-  visual: VisualKind
+  photo: PanelPhoto
+  inset?: InsetKind
   image?: { src: string; alt: string; caption: string }
 }
 
@@ -91,7 +100,13 @@ export const featured: FeaturedProject[] = [
     ],
     tools: ["Python", "NumPy", "Matplotlib", "HDF5", "Linux"],
     status: "Ongoing",
-    visual: "beam",
+    photo: {
+      name: "tacl-lasers",
+      alt: "Four orange laser beams shooting from a telescope dome into a starry sky",
+      caption: "Representative image: laser guide stars at ESO's Very Large Telescope, used to measure and correct atmospheric turbulence. Credit: ESO/F. Kamphues (CC BY 4.0)",
+      position: "68% 55%",
+      textSide: "left",
+    },
   },
   {
     id: "spirit",
@@ -108,7 +123,14 @@ export const featured: FeaturedProject[] = [
     ],
     tools: ["Requirements", "Trade studies", "Excel", "LaTeX"],
     status: "In design. No hardware has flown.",
-    visual: "conops",
+    photo: {
+      name: "spirit-misse",
+      alt: "Materials exposure sample trays mounted on the outside of the International Space Station",
+      caption: "Representative image: NASA's MISSE-FF materials exposure platform on the ISS exterior, 2019. Photo: NASA",
+      position: "38% 50%",
+      textSide: "right",
+    },
+    inset: "conops",
   },
   {
     id: "blue-skies",
@@ -126,7 +148,14 @@ export const featured: FeaturedProject[] = [
     ],
     tools: ["SolidWorks", "Blender", "Pugh charts"],
     status: "Concept proposal, completed",
-    visual: "image",
+    photo: {
+      name: "blue-skies-hurricane",
+      alt: "A hurricane seen from the International Space Station",
+      caption: "Background: Hurricane Genevieve seen from the ISS, 2020. Photo: NASA",
+      position: "62% 60%",
+      textSide: "left",
+    },
+    inset: "image",
     image: {
       src: "blue-skies-roll-cage",
       alt: "Render of a quadrotor UAV inside a spherical protective cage",
@@ -144,7 +173,14 @@ export const featured: FeaturedProject[] = [
     points: [],
     tools: ["SolidWorks"],
     status: "",
-    visual: "airfoil",
+    photo: {
+      name: "aircraft-sailplane",
+      alt: "A white sailplane with long slender wings in flight against a pale sky",
+      caption: "Representative image: NASA PIK-20E sailplane in flight, 1991. Photo: NASA",
+      position: "50% 35%",
+      textSide: "right",
+    },
+    inset: "airfoil",
   },
 ]
 

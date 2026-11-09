@@ -1,5 +1,5 @@
 // Turns the original NASA photos in .local/originals/ into web-ready files in
-// public/media/hero/: AVIF and WebP at three widths, plus a cutout of the lit
+// public/media/photos/: AVIF and WebP at three widths, plus a cutout of the lit
 // rocket and towers from the pad photo (used to put the name behind them).
 //
 // Run from the repo root:  node scripts/prepare-photos.mjs
@@ -10,9 +10,9 @@ import { mkdir } from "node:fs/promises"
 import path from "node:path"
 
 const sourceDir = ".local/originals"
-const outDir = "public/media/hero"
+const outDir = "public/media/photos"
 const widths = [1600, 2560, 3840]
-const photos = ["pad-night", "liftoff", "ascent", "orbit-sunrise"]
+const photos = ["pad-night", "orbit-sunrise", "tacl-lasers", "spirit-misse", "blue-skies-hurricane", "aircraft-sailplane"]
 
 await mkdir(outDir, { recursive: true })
 

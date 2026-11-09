@@ -1,7 +1,7 @@
-// Responsive full-bleed photo from public/media/hero/, served as AVIF with a
+// Responsive full-bleed photo from public/media/photos/, served as AVIF with a
 // WebP fallback at 1600, 2560 and 3840 px wide.
 const widths = [1600, 2560, 3840]
-const base = `${import.meta.env.BASE_URL}media/hero/`
+const base = `${import.meta.env.BASE_URL}media/photos/`
 
 const srcSet = (name: string, ext: string) => widths.map((w) => `${base}${name}-${w}.${ext} ${w}w`).join(", ")
 

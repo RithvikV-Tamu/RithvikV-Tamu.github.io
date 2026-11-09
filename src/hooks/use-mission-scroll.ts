@@ -33,7 +33,8 @@ export function useMissionScroll() {
       const start = tops[index]
       const end = tops[index + 1] ?? document.documentElement.scrollHeight
       const reference = index === 0 ? window.scrollY : middle
-      const fraction = Math.min(Math.max((reference - start) / (end - start - (index === 0 ? window.innerHeight : 0)), 0), 1)
+      const span = Math.max(end - start - (index === 0 ? window.innerHeight / 2 : 0), 1)
+      const fraction = Math.min(Math.max((reference - start) / span, 0), 1)
       const fromAlt = stages[index].altitudeKm
       const toAlt = stages[index + 1]?.altitudeKm ?? fromAlt
 

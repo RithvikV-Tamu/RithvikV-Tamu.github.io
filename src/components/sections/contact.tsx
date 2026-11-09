@@ -1,5 +1,6 @@
 import { ArrowUpRight, FileText, Mail } from "lucide-react"
 import { GithubIcon, LinkedinIcon } from "@/components/brand-icons"
+import { Photo } from "@/components/photo"
 import { SectionHeading } from "@/components/section-heading"
 import { profile } from "@/content/site"
 
@@ -14,8 +15,16 @@ export function Contact() {
   ].filter((link) => link.href)
 
   return (
-    <section id="contact" className="relative overflow-hidden">
-      <div className="mx-auto max-w-6xl px-6 pt-28 pb-40">
+    <section id="contact" className="relative flex min-h-[85svh] flex-col justify-end overflow-hidden">
+      {/* Orbital sunrise behind the closing section */}
+      <Photo
+        name="orbit-sunrise"
+        alt="Sunrise over Earth's horizon seen from the International Space Station"
+        className="absolute inset-0 h-full w-full object-cover object-[20%_50%]"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background/70" />
+
+      <div className="relative mx-auto w-full max-w-6xl px-6 pt-40 pb-16">
         <SectionHeading stageId="contact" title="Contact" />
         <ul className="grid max-w-2xl gap-3 sm:grid-cols-2">
           {links.map(({ label, href, text, Icon }) => (
@@ -24,7 +33,7 @@ export function Contact() {
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel="noreferrer"
-                className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-atmosphere/40"
+                className="group flex items-center gap-4 rounded-xl border border-white/15 bg-black/40 p-5 backdrop-blur-md transition-colors hover:border-atmosphere/50"
               >
                 <Icon className="h-5 w-5 text-atmosphere" aria-hidden="true" />
                 <span className="flex-1">
@@ -38,14 +47,11 @@ export function Contact() {
         </ul>
       </div>
 
-      {/* Earth horizon glow returning at the end of the page */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-[-20%] bottom-[-60%] h-[90%] rounded-[50%] bg-[radial-gradient(ellipse_at_top,#1b3a5c_0%,#0b1625_40%,transparent_70%)] shadow-[0_-2px_60px_rgba(121,185,234,0.25)]"
-      />
-
-      <footer className="relative mx-auto max-w-6xl px-6 pb-8 font-mono text-xs text-muted-foreground">
-        © {currentYear} {profile.name}
+      <footer className="relative mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-2 px-6 pb-8 font-mono text-xs text-white/60">
+        <span>
+          © {currentYear} {profile.name}
+        </span>
+        <span className="text-white/40">Photo: NASA (ISS Expedition 73). Not affiliated with NASA.</span>
       </footer>
     </section>
   )

@@ -46,11 +46,11 @@ After installing:
 3. Check the component's license.
 4. Watch for heavy extras (some pull in Three.js). Remove anything the page does not need.
 
-Adapted components in this repo: Timeline and Card Spotlight (Aceternity UI, MIT) and Bento Grid (Magic UI, MIT).
+Adapted components in this repo: Timeline (Aceternity UI, MIT) and Bento Grid (Magic UI, MIT).
 
-## Hero photos
+## Photos
 
-The launch sequence uses four NASA photos (credits, sources and how to regenerate the web files are in `docs/PHOTO_CREDITS.md`). Originals live in the git-ignored `.local/originals/`. Web versions are made with:
+The hero, project panels and contact section use NASA and ESO photos. Credits, licenses, sources and how to regenerate the web files are in `docs/PHOTO_CREDITS.md`. Originals live in the git-ignored `.local/originals/`. Web versions are made with:
 
 ```powershell
 node scripts/prepare-photos.mjs
@@ -60,7 +60,11 @@ node scripts/prepare-photos.mjs
 
 | Path | Purpose |
 | --- | --- |
-| `src/App.tsx` | The page. Sections will be split into `src/components/sections/`. |
+| `src/App.tsx` | The page: puts the sections in order. |
+| `src/content/site.ts` | All page text, links, project data and photo captions. |
+| `src/components/sections/` | One file per page section. |
+| `src/components/photo.tsx` | Responsive AVIF/WebP photo from `public/media/photos/`. |
+| `scripts/prepare-photos.mjs` | Makes the web photo files and the rocket cutout. |
 | `src/components/ui/` | shadcn and 21st.dev components. |
 | `src/lib/utils.ts` | The `cn()` class-name helper used by shadcn components. |
 | `src/index.css` | Tailwind setup and theme colors. |
