@@ -36,8 +36,8 @@ export function Contact() {
               <EmailCard label={email.label} address={email.address} />
             </li>
           ))}
-          {links.map(({ label, href, text, Icon }) => (
-            <li key={label}>
+          {links.map(({ label, href, text, Icon }, i) => (
+            <li key={label} className={(profile.emails.length + links.length) % 2 === 1 && i === links.length - 1 ? "sm:col-span-2" : undefined}>
               <a href={href} target="_blank" rel="noreferrer" className={cardClass}>
                 <Icon className="h-5 w-5 shrink-0 text-atmosphere" aria-hidden="true" />
                 <span className="min-w-0 flex-1">

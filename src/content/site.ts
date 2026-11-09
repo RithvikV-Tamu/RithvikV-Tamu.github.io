@@ -13,9 +13,8 @@ export const profile = {
     { label: "School Email", address: "rithvik_v@tamu.edu" },
     { label: "Personal Email", address: "vootukur.r@gmail.com" },
   ],
-  // PDFs in public/resume/. Copy updated versions from C:\Projects\Resumes.
+  // CV PDF in public/resume/. Copy updated versions from C:\Projects\Resumes.
   resumes: [
-    { label: "Aerospace Resume", short: "Resume", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Aerospace_Resume.pdf` },
     { label: "Curriculum Vitae", short: "CV", href: `${import.meta.env.BASE_URL}resume/Rithvik_Vootukur_Curriculum_Vitae.pdf` },
   ],
 }

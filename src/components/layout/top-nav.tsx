@@ -46,7 +46,7 @@ export function TopNav({ activeIndex, onOpenSearch }: TopNavProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Resume PDFs, always one click away */}
+          {/* CV PDF, always one click away */}
           {profile.resumes.map((resume) => (
             <a
               key={resume.href}
