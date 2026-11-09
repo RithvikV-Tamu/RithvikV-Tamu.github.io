@@ -5,7 +5,7 @@ import { stages } from "@/content/site"
 // position into a decorative "altitude" between the stage altitudes.
 export function useMissionScroll() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [altitudeKm, setAltitudeKm] = useState(0)
+  const [altitudeFt, setAltitudeFt] = useState(0)
 
   useEffect(() => {
     let frame = 0
@@ -26,7 +26,7 @@ export function useMissionScroll() {
       const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
       if (atBottom) {
         setActiveIndex(stages.length - 1)
-        setAltitudeKm(stages[stages.length - 1].altitudeKm)
+        setAltitudeFt(stages[stages.length - 1].altitudeFt)
         return
       }
 
@@ -35,11 +35,11 @@ export function useMissionScroll() {
       const reference = index === 0 ? window.scrollY : middle
       const span = Math.max(end - start - (index === 0 ? window.innerHeight / 2 : 0), 1)
       const fraction = Math.min(Math.max((reference - start) / span, 0), 1)
-      const fromAlt = stages[index].altitudeKm
-      const toAlt = stages[index + 1]?.altitudeKm ?? fromAlt
+      const fromAlt = stages[index].altitudeFt
+      const toAlt = stages[index + 1]?.altitudeFt ?? fromAlt
 
       setActiveIndex(index)
-      setAltitudeKm(Math.round(fromAlt + fraction * (toAlt - fromAlt)))
+      setAltitudeFt(Math.round(fromAlt + fraction * (toAlt - fromAlt)))
     }
 
     function onScroll() {
@@ -56,5 +56,5 @@ export function useMissionScroll() {
     }
   }, [])
 
-  return { activeIndex, altitudeKm }
+  return { activeIndex, altitudeFt }
 }

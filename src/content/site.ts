@@ -31,13 +31,13 @@ export const about = {
 // Altitudes are decorative, not data.
 // Sections are ordered by importance: work first, then supporting detail.
 export const stages = [
-  { id: "launch", label: "Launch", altitudeKm: 0, nav: "Top" },
-  { id: "work", label: "Orbit insertion", altitudeKm: 100, nav: "Work" },
-  { id: "more", label: "Cruise", altitudeKm: 200, nav: "More" },
-  { id: "about", label: "Crew", altitudeKm: 260, nav: "About" },
-  { id: "toolkit", label: "Telemetry", altitudeKm: 320, nav: "Toolkit" },
-  { id: "timeline", label: "Flight log", altitudeKm: 370, nav: "Timeline" },
-  { id: "contact", label: "Downlink", altitudeKm: 400, nav: "Contact" },
+  { id: "launch", label: "Takeoff", altitudeFt: 0, nav: "Top" },
+  { id: "work", label: "Climb", altitudeFt: 15000, nav: "Work" },
+  { id: "more", label: "Cruise", altitudeFt: 32000, nav: "More" },
+  { id: "about", label: "Crew", altitudeFt: 38000, nav: "About" },
+  { id: "toolkit", label: "Instruments", altitudeFt: 42000, nav: "Toolkit" },
+  { id: "timeline", label: "Logbook", altitudeFt: 45000, nav: "Timeline" },
+  { id: "contact", label: "Radio", altitudeFt: 50000, nav: "Contact" },
 ] as const
 
 export const sectionIntros = {

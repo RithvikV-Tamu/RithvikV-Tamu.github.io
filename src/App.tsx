@@ -14,13 +14,13 @@ import { Toolkit } from "@/components/sections/toolkit"
 import { useMissionScroll } from "@/hooks/use-mission-scroll"
 
 function App() {
-  const { activeIndex, altitudeKm } = useMissionScroll()
+  const { activeIndex, altitudeFt } = useMissionScroll()
   const [searchOpen, setSearchOpen] = useState(false)
 
   return (
     <MotionConfig reducedMotion="user">
       <TopNav activeIndex={activeIndex} onOpenSearch={() => setSearchOpen(true)} />
-      <AltitudeGauge activeIndex={activeIndex} altitudeKm={altitudeKm} />
+      <AltitudeGauge activeIndex={activeIndex} altitudeFt={altitudeFt} />
       <CommandMenu open={searchOpen} onOpenChange={setSearchOpen} />
       <main>
         <LaunchHero />

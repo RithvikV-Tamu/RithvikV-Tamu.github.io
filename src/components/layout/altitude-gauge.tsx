@@ -3,25 +3,25 @@ import { cn } from "@/lib/utils"
 
 interface AltitudeGaugeProps {
   activeIndex: number
-  altitudeKm: number
+  altitudeFt: number
 }
 
-const maxAltitude = stages[stages.length - 1].altitudeKm
+const maxAltitude = stages[stages.length - 1].altitudeFt
 
 // Compact fixed rail on the right edge: altitude readout, current stage name,
 // and one dot per stage that jumps to its section.
-export function AltitudeGauge({ activeIndex, altitudeKm }: AltitudeGaugeProps) {
-  const fillPercent = (altitudeKm / maxAltitude) * 100
+export function AltitudeGauge({ activeIndex, altitudeFt }: AltitudeGaugeProps) {
+  const fillPercent = (altitudeFt / maxAltitude) * 100
 
   return (
     <nav
       aria-label="Page sections"
-      className="fixed top-1/2 right-5 z-40 hidden w-16 -translate-y-1/2 flex-col items-center gap-3 min-[1400px]:flex"
+      className="fixed top-1/2 right-4 z-40 hidden w-20 -translate-y-1/2 flex-col items-center gap-3 min-[1400px]:flex"
     >
       <div className="text-center font-mono" aria-hidden="true">
         <p className="text-[10px] tracking-widest text-muted-foreground">ALT</p>
-        <p className="text-sm text-foreground tabular-nums">{altitudeKm.toString().padStart(3, "0")}</p>
-        <p className="text-[10px] text-muted-foreground">km</p>
+        <p className="text-sm text-foreground tabular-nums">{(Math.round(altitudeFt / 100) * 100).toLocaleString("en-US")}</p>
+        <p className="text-[10px] text-muted-foreground">ft</p>
       </div>
 
       <div className="relative flex h-56 w-4 justify-center">

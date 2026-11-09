@@ -16,13 +16,14 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative flex min-h-[85svh] flex-col justify-end overflow-hidden">
-      {/* Orbital sunrise behind the closing section */}
+      {/* Two F-22s flying head-on behind the closing section */}
       <Photo
-        name="orbit-sunrise"
-        alt="Sunrise over Earth's horizon seen from the International Space Station"
-        className="absolute inset-0 h-full w-full object-cover object-[20%_50%]"
+        name="jet-headon"
+        alt="Two F-22 Raptors flying head-on toward the camera above the clouds"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background/70" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background via-background/55 to-background/85" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/80 via-background/30 to-transparent" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 pt-40 pb-16">
         <SectionHeading stageId="contact" title="Contact" intro={sectionIntros.contact} />
@@ -51,7 +52,7 @@ export function Contact() {
         <span>
           © {currentYear} {profile.name}
         </span>
-        <span className="text-white/40">Photo: NASA (ISS Expedition 73). Not affiliated with NASA.</span>
+        <span className="text-white/40">Photo: U.S. Air Force, Tech. Sgt. Emerson Nunez. Not affiliated with the U.S. Air Force.</span>
       </footer>
     </section>
   )

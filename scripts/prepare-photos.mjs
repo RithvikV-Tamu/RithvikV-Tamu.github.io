@@ -1,9 +1,9 @@
 // Turns the original photos in .local/originals/ into web-ready files in
 // public/media/photos/: AVIF and WebP at three widths, plus a blurred copy of
-// the hero nebula for the shader's depth of field.
+// the hero photo for the shader's depth of field.
 //
 // Run from the repo root:   node scripts/prepare-photos.mjs
-// Only some photos:         node scripts/prepare-photos.mjs --only=nebula-veil
+// Only some photos:         node scripts/prepare-photos.mjs --only=jet-twilight
 // Only the blurred map:     node scripts/prepare-photos.mjs --maps
 // The originals are not committed. Download links are in docs/PHOTO_CREDITS.md.
 
@@ -14,7 +14,7 @@ import path from "node:path"
 const sourceDir = ".local/originals"
 const outDir = "public/media/photos"
 const widths = [1600, 2560, 3840]
-const photos = ["nebula-veil", "orbit-sunrise", "tacl-lasers", "spirit-misse", "blue-skies-hurricane", "aircraft-sailplane"]
+const photos = ["jet-twilight", "jet-headon", "tacl-lasers", "spirit-misse", "blue-skies-hurricane", "aircraft-sailplane"]
 
 await mkdir(outDir, { recursive: true })
 
@@ -33,12 +33,12 @@ for (const name of mapsOnly ? [] : selected) {
   console.log(`photo: ${name}`)
 }
 
-// Blurred copy of the hero nebula, mixed in by the shader away from the focus band.
-if (mapsOnly || selected.includes("nebula-veil")) {
-  await sharp(path.join(sourceDir, "nebula-veil.jpg"), { limitInputPixels: false })
+// Blurred copy of the hero photo, mixed in by the shader away from the jet.
+if (mapsOnly || selected.includes("jet-twilight")) {
+  await sharp(path.join(sourceDir, "jet-twilight.jpg"), { limitInputPixels: false })
     .resize({ width: 1600 })
-    .blur(6)
+    .blur(9)
     .webp({ quality: 82 })
-    .toFile(path.join(outDir, "nebula-veil-blur.webp"))
-  console.log("nebula: blur map")
+    .toFile(path.join(outDir, "jet-twilight-blur.webp"))
+  console.log("hero: blur map")
 }
