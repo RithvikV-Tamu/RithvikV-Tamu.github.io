@@ -1,17 +1,16 @@
 import { useEffect, useRef } from "react"
 
-// Full-screen WebGL view of Webb's "Cosmic Cliffs" nebula, built like a
-// paper diorama, with the name as a thick 3D layer inside it and a small black
-// hole that follows the cursor.
+// Full-screen WebGL view of Webb's "Cosmic Cliffs" nebula in two layers, with
+// the name sitting between them and a small black hole that follows the cursor.
 //
-// Paper layers: a depth map (dust near, starfield far) is sliced into stacked
-// layers. Each layer shifts with the pointer (parallax), casts a soft shadow
-// on the layers below, has a lit top edge, and blurs with distance from the
-// focal plane (depth of field). The name is its own layer at the focal plane,
-// so dust in front of it still covers it.
+// Layers: a depth map splits the photo into a far background (starfield) and
+// a near foreground (dust). They slide by different amounts with the pointer
+// (parallax), the foreground casts a soft shadow on the background, and the
+// background is slightly softened (depth of field).
 //
-// Letters: extruded toward the lower right, lit with a bevel normal taken from
-// a blurred copy of the text mask, and casting a shadow on the layers behind.
+// Name: solid, light lettering with a short extrusion, bevel lighting and a
+// shadow on the background. It sits behind the foreground dust, but the dust
+// turns mostly see-through over the letters so the name always reads clearly.
 //
 // Black hole: point-mass lens equation. A pixel at distance r shows the scene
 // at r - rE^2 / r, which produces an Einstein ring.
@@ -39,9 +38,8 @@ uniform float uStrength;
 uniform float uTime;
 uniform vec2 uTilt;
 
-const float FOCUS = 0.5;
-const float HALF_STEP = 0.1;
-const float EDGE = 0.012;
+// uDepth holds the foreground mask: white below the ridge of the dust cliffs.
+const float SPLIT = 0.5;
 
 vec2 coverUv(vec2 uv) {
   float sr = uRes.x / uRes.y;
@@ -56,84 +54,9 @@ float hash(vec2 p) {
   return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float depthAt(vec2 uv) {
-  return texture2D(uDepth, coverUv(uv)).r;
-}
-
-// How far a layer slides with the pointer, relative to the focal plane.
-vec2 layerShift(float level) {
-  return uTilt * (level - FOCUS) * vec2(0.03, 0.022);
-}
-
-// One paper layer: color with depth of field, drop shadow from the layer
-// above, and a lit top-left edge. Alpha is how much of this layer covers the pixel.
-vec4 paperLayer(float level, vec2 uv) {
-  vec2 s = uv + layerShift(level);
-  float d = depthAt(s);
-  float a = level <= 0.0 ? 1.0 : smoothstep(level - HALF_STEP - EDGE, level - HALF_STEP + EDGE, d);
-  if (a < 0.002) return vec4(0.0);
-
-  vec2 ic = coverUv(s);
-  float dof = clamp(abs(level - FOCUS) * 1.3, 0.0, 0.7);
-  vec3 c = mix(texture2D(uImage, ic).rgb, texture2D(uBlur, ic).rgb, dof);
-
-  // Light comes from the upper left, so shadows fall to the lower right.
-  vec2 toLight = vec2(-0.55, -0.85) * vec2(uRes.y / uRes.x, 1.0) * 0.014;
-  float upper = level + HALF_STEP;
-  float shade = 0.6 * smoothstep(upper - EDGE, upper + EDGE, depthAt(s + toLight))
-              + 0.4 * smoothstep(upper - EDGE, upper + EDGE, depthAt(s + toLight * 2.4));
-  c *= 1.0 - 0.42 * shade;
-
-  if (level > 0.0) {
-    float lower = level - HALF_STEP;
-    float edge = 1.0 - smoothstep(lower - EDGE, lower + EDGE, depthAt(s + toLight * 0.3));
-    c += vec3(1.0, 0.9, 0.8) * edge * 0.08;
-  }
-
-  // Nearer sheets catch a little more light.
-  c *= 0.8 + level * 0.28;
-  return vec4(c, a);
-}
-
-// The name as a thick sheet: beveled face plus extruded sides.
-vec4 nameLayer(vec2 uv) {
-  vec2 px = 1.0 / uRes;
-  vec3 m = texture2D(uText, uv).rgb;
-  float face = m.r;
-
-  // Extrusion: look back toward the upper left for letter pixels.
-  vec2 stepDir = vec2(0.6, 1.0) * px * (uRes.y * 0.0016);
-  float side = 0.0;
-  float sideDepth = 0.0;
-  for (int k = 1; k <= 8; k++) {
-    float hit = texture2D(uText, uv - stepDir * float(k)).r;
-    if (hit > 0.5 && side < 0.5) {
-      side = hit;
-      sideDepth = float(k) / 8.0;
-    }
-  }
-  float alpha = max(face, side);
-  if (alpha < 0.002) return vec4(0.0);
-
-  // Bevel normal from the gradient of the softly blurred mask.
-  vec2 o = px * 2.0;
-  float gx = texture2D(uText, uv + vec2(o.x, 0.0)).b - texture2D(uText, uv - vec2(o.x, 0.0)).b;
-  float gy = texture2D(uText, uv + vec2(0.0, o.y)).b - texture2D(uText, uv - vec2(0.0, o.y)).b;
-  vec3 n = normalize(vec3(-gx * 4.0, -gy * 4.0, 1.0));
-  vec3 lightDir = normalize(vec3(-0.5, -0.7, 0.6));
-  float diffuse = max(dot(n, lightDir), 0.0);
-  float spec = pow(max(dot(reflect(-lightDir, n), vec3(0.0, 0.0, 1.0)), 0.0), 28.0);
-
-  // Face: a brighter, slightly offset copy of the nebula, like a print on card.
-  vec3 inner = texture2D(uImage, coverUv(uv * 0.97 + vec2(0.015, 0.012))).rgb;
-  inner = pow(inner, vec3(0.8)) * 1.25 + vec3(0.1, 0.13, 0.2);
-  inner = mix(inner, vec3(0.92, 0.95, 1.0), 0.2);
-  vec3 faceColor = inner * (0.55 + 0.6 * diffuse) + vec3(1.0, 0.97, 0.92) * spec * 0.55;
-
-  // Sides: dark, cool card edge, darker further back.
-  vec3 sideColor = mix(vec3(0.2, 0.26, 0.42), vec3(0.06, 0.08, 0.14), sideDepth) + inner * 0.08;
-
-  return vec4(mix(sideColor, faceColor, face), alpha);
+float foregroundAt(vec2 uv, float softness) {
+  float d = texture2D(uDepth, coverUv(uv)).r;
+  return smoothstep(SPLIT - softness, SPLIT + softness, d);
 }
 
 void main() {
@@ -141,39 +64,73 @@ void main() {
   vec2 p = uv * uRes;
   vec2 d = p - uMouse;
   float dist = length(d);
-  float r = dist / uRes.y;
+  // Lens size follows the shorter screen side, so it suits phones and desktops.
+  float unit = min(uRes.x, uRes.y);
+  float r = dist / unit;
   vec2 dir = d / max(dist, 0.0001);
 
-  // Gravitational lens bends every layer.
-  float rE = 0.09 * uStrength;
+  // Gravitational lens bends everything behind it.
+  float rE = 0.1 * uStrength;
   float rH = rE * 0.42;
   float shift = min((rE * rE) / max(r, 0.0001), 0.6);
-  vec2 luv = (p - dir * shift * uRes.y) / uRes;
+  vec2 luv = (p - dir * shift * unit) / uRes;
 
-  // Composite front to back: near dust, the name, then everything behind it.
-  vec3 col = vec3(0.0);
-  float covered = 0.0;
-  vec4 layer;
+  vec2 aspect = vec2(uRes.y / uRes.x, 1.0);
+  vec2 toLight = vec2(-0.55, -0.85) * aspect * 0.016;
 
-  layer = paperLayer(1.0, luv); col += (1.0 - covered) * layer.a * layer.rgb; covered += (1.0 - covered) * layer.a;
-  layer = paperLayer(0.8, luv); col += (1.0 - covered) * layer.a * layer.rgb; covered += (1.0 - covered) * layer.a;
-  layer = paperLayer(0.6, luv); col += (1.0 - covered) * layer.a * layer.rgb; covered += (1.0 - covered) * layer.a;
+  // Background: far starfield, slid slightly against the pointer and softened.
+  vec2 bs = luv - uTilt * vec2(0.012, 0.009);
+  vec2 bc = coverUv(bs);
+  vec3 col = mix(texture2D(uImage, bc).rgb, texture2D(uBlur, bc).rgb, 0.3) * 0.82;
 
-  layer = nameLayer(luv); col += (1.0 - covered) * layer.a * layer.rgb; covered += (1.0 - covered) * layer.a;
+  // Foreground: near dust, slid further with the pointer.
+  vec2 fs = luv + uTilt * vec2(0.02, 0.015);
+  float fg = foregroundAt(fs, 0.08);
+  vec3 fgColor = texture2D(uImage, coverUv(fs)).rgb;
+  float fgShadow = 0.6 * foregroundAt(fs + toLight, 0.45) + 0.4 * foregroundAt(fs + toLight * 2.2, 0.45);
 
-  // The name casts a soft shadow and a faint glow on the sheets behind it.
-  vec3 textBehind = texture2D(uText, luv - vec2(0.006, 0.011) * vec2(uRes.y / uRes.x, 1.0)).rgb;
-  float nameShadow = textBehind.g;
-  float nameGlow = texture2D(uText, luv).g;
-
-  for (int i = 0; i < 3; i++) {
-    float level = 0.4 - float(i) * 0.2;
-    layer = paperLayer(level, luv);
-    layer.rgb *= 1.0 - 0.5 * nameShadow;
-    layer.rgb += vec3(0.3, 0.5, 1.0) * nameGlow * 0.12;
-    col += (1.0 - covered) * layer.a * layer.rgb;
-    covered += (1.0 - covered) * layer.a;
+  // Name, sitting between the two layers at the focal plane.
+  vec2 px = 1.0 / uRes;
+  vec3 m = texture2D(uText, luv).rgb;
+  float face = m.r;
+  vec2 extrude = vec2(0.55, 1.0) * px * (uRes.y * 0.0011);
+  float side = 0.0;
+  float sideDepth = 0.0;
+  for (int k = 1; k <= 6; k++) {
+    float hit = texture2D(uText, luv - extrude * float(k)).r;
+    if (hit > 0.5 && side < 0.5) {
+      side = hit;
+      sideDepth = float(k) / 6.0;
+    }
   }
+  float nameAlpha = max(face, side);
+
+  // Shadows on the background: the dust above it, and the name in front of it.
+  float nameShadow = texture2D(uText, luv - vec2(0.006, 0.012) * aspect).g;
+  col *= 1.0 - 0.4 * fgShadow * (1.0 - fg);
+  col *= 1.0 - 0.55 * nameShadow;
+
+  if (nameAlpha > 0.001) {
+    vec2 o = px * 2.0;
+    float gx = texture2D(uText, luv + vec2(o.x, 0.0)).b - texture2D(uText, luv - vec2(o.x, 0.0)).b;
+    float gy = texture2D(uText, luv + vec2(0.0, o.y)).b - texture2D(uText, luv - vec2(0.0, o.y)).b;
+    vec3 n = normalize(vec3(-gx * 3.0, -gy * 3.0, 1.0));
+    vec3 lightDir = normalize(vec3(-0.5, -0.7, 0.6));
+    float diffuse = max(dot(n, lightDir), 0.0);
+    float spec = pow(max(dot(reflect(-lightDir, n), vec3(0.0, 0.0, 1.0)), 0.0), 30.0);
+
+    // Warm white face with a cool shadow side, then a deep slate extrusion.
+    vec3 faceColor = mix(vec3(0.72, 0.78, 0.9), vec3(1.0, 0.98, 0.95), diffuse) + spec * 0.35;
+    vec3 sideColor = mix(vec3(0.2, 0.25, 0.36), vec3(0.07, 0.09, 0.14), sideDepth);
+    vec3 nameColor = mix(sideColor, faceColor, face);
+    // A little of the dust's shadow falls across the name too.
+    nameColor *= 1.0 - 0.2 * fgShadow;
+    col = mix(col, nameColor, nameAlpha);
+  }
+
+  // Foreground on top, mostly see-through where it crosses the letters.
+  float fgAlpha = fg * mix(1.0, 0.2, nameAlpha);
+  col = mix(col, fgColor * 1.04, fgAlpha);
 
   // Accretion glow, photon ring and event horizon.
   if (uStrength > 0.01) {
@@ -188,9 +145,7 @@ void main() {
     col = mix(col, vec3(0.0), horizon);
   }
 
-  // Paper grain, vignette and film grain.
-  float fiber = hash(floor(p * 0.5)) * 0.5 + hash(floor(p * 0.12)) * 0.5;
-  col *= 0.97 + 0.06 * fiber;
+  // Vignette and fine grain.
   float v = smoothstep(1.2, 0.3, length((uv - 0.5) * vec2(uRes.x / uRes.y, 1.0)));
   col *= mix(0.5, 1.0, v);
   col += (hash(p + fract(uTime) * 100.0) - 0.5) * 0.025;
@@ -242,8 +197,9 @@ function loadImage(url: string) {
   })
 }
 
-// Draws the name three times (sharp, wide glow, tight blur) and packs the
-// results into the R, G and B channels of one canvas.
+// Draws the name three times (sharp, wide blur, tight blur) and packs the
+// results into the R, G and B channels of one canvas. G drives the cast
+// shadow; B gives the bevel its rounded edge.
 function drawNameMask(width: number, height: number, lines: string[], fontFamily: string) {
   const layer = (blur: number) => {
     const canvas = document.createElement("canvas")
@@ -253,21 +209,21 @@ function drawNameMask(width: number, height: number, lines: string[], fontFamily
     ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, width, height)
 
-    let fontSize = Math.min(width * 0.14, height * 0.2)
+    let fontSize = Math.min(width * 0.1, height * 0.16)
     const setFont = () => {
-      ctx.font = `800 ${fontSize}px ${fontFamily}`
-      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.02}px`
+      ctx.font = `400 ${fontSize}px ${fontFamily}`
+      if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${fontSize * 0.05}px`
     }
     setFont()
     const widest = () => Math.max(...lines.map((line) => ctx.measureText(line).width))
-    while (widest() > width * (height > width ? 0.86 : 0.74) && fontSize > 12) {
+    while (widest() > width * (height > width ? 0.86 : 0.72) && fontSize > 12) {
       fontSize *= 0.96
       setFont()
     }
 
-    const lineHeight = fontSize * 1.04
+    const lineHeight = fontSize * 1.18
     const portrait = height > width
-    const centerY = height * (portrait ? 0.33 : 0.3)
+    const centerY = height * (portrait ? 0.32 : 0.29)
     const top = centerY - (lineHeight * (lines.length - 1)) / 2
 
     ctx.textAlign = "center"
@@ -287,8 +243,8 @@ function drawNameMask(width: number, height: number, lines: string[], fontFamily
   }
 
   const sharp = layer(0)
-  const wide = layer(0.3)
-  const tight = layer(0.05)
+  const wide = layer(0.22)
+  const tight = layer(0.06)
 
   const out = document.createElement("canvas")
   out.width = width
@@ -373,9 +329,9 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
     let lastFrame = performance.now()
 
     const resize = (force = false) => {
-      const dprCap = coarse ? 1 : 1.25
+      const dprCap = coarse ? 1.25 : 1.5
       const dpr = Math.min(window.devicePixelRatio || 1, dprCap) * quality
-      const width = Math.min(Math.round(canvas.clientWidth * dpr), 2400)
+      const width = Math.min(Math.round(canvas.clientWidth * dpr), 2560)
       const height = Math.round(width * (canvas.clientHeight / Math.max(canvas.clientWidth, 1)))
       if (!force && canvas.width === width && canvas.height === height && textTexture) return
       canvas.width = width
@@ -463,7 +419,7 @@ export function NebulaCanvas({ imageUrl, blurUrl, depthUrl, lines, fontFamily, r
       if (reduceMotion) render()
     }
 
-    Promise.all([loadImage(imageUrl), loadImage(blurUrl), loadImage(depthUrl), document.fonts.load(`800 100px ${fontFamily}`).catch(() => undefined)])
+    Promise.all([loadImage(imageUrl), loadImage(blurUrl), loadImage(depthUrl), document.fonts.load(`400 100px ${fontFamily}`).catch(() => undefined)])
       .then(([image, blur, depth]) => {
         if (disposed) return
         imageSize = [image.naturalWidth, image.naturalHeight]

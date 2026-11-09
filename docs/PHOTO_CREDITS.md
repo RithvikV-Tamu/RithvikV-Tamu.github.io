@@ -23,6 +23,6 @@ The Blue Skies inset render (`src/assets/projects/blue-skies-roll-cage.webp`) co
 
 1. Download the originals above into `.local/originals/`, named `<file prefix>.jpg` (for example `tacl-lasers.jpg`). That folder is git-ignored.
 2. From the repo root, run `node scripts/prepare-photos.mjs`.
-3. It writes AVIF and WebP files at 1600, 2560 and 3840 px wide to `public/media/photos/`, plus `nebula-carina-blur.webp` and `nebula-carina-depth.png` for the hero shader. The full run takes about 10 minutes because of the 123-megapixel Webb original; `node scripts/prepare-photos.mjs --maps` regenerates only the two nebula maps in seconds.
+3. It writes AVIF and WebP files at 1600, 2560 and 3840 px wide to `public/media/photos/`, plus `nebula-carina-blur.webp` (background depth of field) and `nebula-carina-fg.png` (foreground mask below a hand-traced ridge line) for the hero shader. The full run takes about 10 minutes because of the 123-megapixel Webb original; `node scripts/prepare-photos.mjs --maps` regenerates only the two nebula maps in seconds.
 
 The earlier Artemis I pad hero (with a hand-traced rocket cutout) is in git history before the nebula hero commit.

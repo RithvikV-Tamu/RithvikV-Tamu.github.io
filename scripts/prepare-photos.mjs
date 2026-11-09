@@ -1,7 +1,9 @@
 // Turns the original photos in .local/originals/ into web-ready files in
-// public/media/photos/: AVIF and WebP at three widths.
+// public/media/photos/: AVIF and WebP at three widths, plus two extra
+// textures for the nebula hero shader.
 //
 // Run from the repo root:  node scripts/prepare-photos.mjs
+// Pass --maps to regenerate only the nebula shader textures (fast).
 // The originals are not committed. Download links are in docs/PHOTO_CREDITS.md.
 
 import sharp from "sharp"
@@ -22,7 +24,6 @@ const photos = [
 
 await mkdir(outDir, { recursive: true })
 
-// Pass --maps to regenerate only the nebula blur and depth maps (fast).
 const mapsOnly = process.argv.includes("--maps")
 
 for (const name of mapsOnly ? [] : photos) {
@@ -36,11 +37,21 @@ for (const name of mapsOnly ? [] : photos) {
   console.log(`photo: ${name}`)
 }
 
-// Extra textures for the nebula hero shader.
-// 1. A blurred copy, mixed in for depth of field.
-// 2. A depth map: orange dust is near (bright), the blue starfield is far
-//    (black), and dust lower in the frame is nearer than dust at the ridge.
-//    The shader slices this into stacked "paper" layers.
+// Nebula hero textures:
+// 1. A blurred copy, mixed into the background for depth of field.
+// 2. A foreground mask: everything below the ridge of the dust cliffs is
+//    foreground (white), the starfield above it is background (black).
+//    The ridge is traced by hand (normalized x, y) because the cliffs carry a
+//    blue haze and parts of the sky are dark, which defeats color detection.
+const ridgeLine = [
+  [0, 0.215], [0.03, 0.21], [0.05, 0.24], [0.08, 0.26], [0.1, 0.27], [0.13, 0.285], [0.16, 0.295],
+  [0.18, 0.29], [0.185, 0.275], [0.195, 0.275], [0.2, 0.3], [0.21, 0.35], [0.23, 0.4], [0.25, 0.43],
+  [0.27, 0.45], [0.29, 0.455], [0.31, 0.43], [0.33, 0.42], [0.36, 0.405], [0.39, 0.39], [0.42, 0.375],
+  [0.44, 0.365], [0.46, 0.365], [0.48, 0.38], [0.5, 0.4], [0.52, 0.415], [0.54, 0.42], [0.57, 0.425],
+  [0.6, 0.415], [0.62, 0.43], [0.65, 0.44], [0.68, 0.445], [0.7, 0.43], [0.72, 0.415], [0.75, 0.4],
+  [0.78, 0.39], [0.8, 0.37], [0.82, 0.35], [0.84, 0.335], [0.87, 0.33], [0.9, 0.33], [0.92, 0.31],
+  [0.94, 0.28], [0.96, 0.255], [0.98, 0.235], [1, 0.22],
+]
 {
   const input = path.join(sourceDir, "nebula-carina.jpg")
   await sharp(input, { limitInputPixels: false })
@@ -49,40 +60,17 @@ for (const name of mapsOnly ? [] : photos) {
     .webp({ quality: 80 })
     .toFile(path.join(outDir, "nebula-carina-blur.webp"))
 
-  const { data, info } = await sharp(input, { limitInputPixels: false })
-    .resize({ width: 1024 })
-    .removeAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true })
-
-  const smoothstep = (a, b, x) => {
-    const t = Math.min(Math.max((x - a) / (b - a), 0), 1)
-    return t * t * (3 - 2 * t)
-  }
-  // Large-scale brightness, so layer edges follow the cloud structures.
-  const glow = await sharp(input, { limitInputPixels: false })
-    .resize({ width: 1024 })
-    .greyscale()
-    .blur(14)
-    .raw()
-    .toBuffer()
-
-  const depth = Buffer.alloc(info.width * info.height)
-  for (let i = 0; i < depth.length; i++) {
-    const r = data[i * 3] / 255
-    const b = data[i * 3 + 2] / 255
-    const y = Math.floor(i / info.width) / info.height
-    // Hue ratio rather than brightness, so dark dust lanes still count as dust.
-    const warm = (r - b) / (r + b + 0.05)
-    const dust = smoothstep(0.04, 0.35, warm) * smoothstep(0.015, 0.1, r)
-    const structure = glow[i] / 255
-    depth[i] = Math.round(255 * Math.min(1, dust * (0.36 + 0.42 * y + 0.42 * structure)))
-  }
-  // A strong blur merges small specks so each paper layer is a broad sheet.
-  await sharp(depth, { raw: { width: info.width, height: info.height, channels: 1 } })
-    .blur(12)
+  const width = 1024
+  const height = Math.round(width * (8441 / 14575))
+  const points = [...ridgeLine, [1, 1], [0, 1]].map(([x, y]) => `${(x * width).toFixed(1)},${(y * height).toFixed(1)}`).join(" ")
+  const svg = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+      `<rect width="100%" height="100%" fill="black"/><polygon points="${points}" fill="white"/></svg>`
+  )
+  await sharp(svg)
+    .blur(1.2)
     .toColourspace("b-w")
     .png()
-    .toFile(path.join(outDir, "nebula-carina-depth.png"))
-  console.log("nebula: blur and depth maps")
+    .toFile(path.join(outDir, "nebula-carina-fg.png"))
+  console.log("nebula: blur map and foreground mask")
 }

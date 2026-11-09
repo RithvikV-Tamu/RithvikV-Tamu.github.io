@@ -6,11 +6,11 @@ import { Photo } from "@/components/photo"
 import { heroFacts, profile } from "@/content/site"
 import { cn } from "@/lib/utils"
 
-const FONT_FAMILY = '"Unbounded Variable", "Geist Variable", sans-serif'
+const FONT_FAMILY = '"Michroma", "Geist Variable", sans-serif'
 
 const photoBase = `${import.meta.env.BASE_URL}media/photos/`
 const blurUrl = `${photoBase}nebula-carina-blur.webp`
-const depthUrl = `${photoBase}nebula-carina-depth.png`
+const depthUrl = `${photoBase}nebula-carina-fg.png`
 
 // Picks the nebula texture size for the shader based on screen width.
 function nebulaUrl() {
@@ -61,7 +61,7 @@ export function LaunchHero() {
             priority
           />
           <div className="absolute inset-x-0 top-[33%] -translate-y-1/2 px-4 text-center sm:top-[30%]">
-            <p className="font-display text-[12.5vw] leading-[1.02] font-extrabold tracking-[0.02em] text-white [text-shadow:0_0_40px_rgba(121,185,234,0.55)] lg:text-[12vw]">
+            <p className="font-display text-[9.5vw] leading-[1.08] tracking-[0.05em] text-white [text-shadow:0_6px_24px_rgba(0,0,0,0.7)] lg:text-[8.6vw]">
               {lines.map((line) => (
                 <span key={line} className="block">
                   {line}
