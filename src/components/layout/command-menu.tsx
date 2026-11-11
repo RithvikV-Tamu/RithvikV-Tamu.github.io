@@ -45,6 +45,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
     ...profile.emails.map((email) => ({ label: `Email ${email.address}`, url: `mailto:${email.address}` })),
     { label: "GitHub profile", url: profile.github },
     { label: "LinkedIn", url: profile.linkedin },
+    ...featured.filter((project) => project.href).map((project) => ({ label: `${project.title} code`, url: project.href! })),
     ...moreWork.filter((item) => item.href).map((item) => ({ label: `${item.name} code`, url: item.href! })),
   ].filter((link) => link.url)
 

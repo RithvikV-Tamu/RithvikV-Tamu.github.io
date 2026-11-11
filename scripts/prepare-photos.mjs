@@ -14,7 +14,7 @@ import path from "node:path"
 const sourceDir = ".local/originals"
 const outDir = "public/media/photos"
 const widths = [1600, 2560, 3840]
-const photos = ["jet-twilight", "jet-headon", "tacl-lasers", "spirit-misse", "blue-skies-hurricane", "aircraft-sailplane"]
+const photos = ["jet-twilight", "jet-headon", "tacl-lasers", "spirit-misse", "blue-skies-hurricane", "aircraft-sailplane", "a7-sunset"]
 
 await mkdir(outDir, { recursive: true })
 

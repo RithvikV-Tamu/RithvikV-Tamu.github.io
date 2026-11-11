@@ -70,7 +70,7 @@ export const quickStats = [
 ]
 
 // Interactive or static cards shown on a project's photo panel.
-export type InsetKind = "beam" | "conops" | "image" | "airfoil"
+export type InsetKind = "beam" | "conops" | "image" | "airfoil" | "a7a"
 
 // Background photo for a project panel (files in public/media/photos/).
 // These are representative images, not photos of Rithvik's own hardware.
@@ -95,6 +95,8 @@ export interface FeaturedProject {
   photo: PanelPhoto
   inset?: InsetKind
   image?: { src: string; alt: string; caption: string }
+  // Optional code link shown on the panel.
+  href?: string
 }
 
 export const featured: FeaturedProject[] = [
@@ -178,6 +180,33 @@ export const featured: FeaturedProject[] = [
       alt: "Render of a quadrotor drone inside a spherical protective cage",
       caption: "Concept render from our team proposal. Not a built prototype.",
     },
+  },
+  {
+    id: "a7a",
+    title: "A-7A Corsair II Stability and Control",
+    category: "Flight Dynamics",
+    dates: "Spring 2026",
+    role: "AERO 321 Course Project",
+    summary:
+      "An individual linearized stability and control analysis of the A-7A Corsair II at 15,000 ft, Mach 0.6 and 4° angle of attack. Pick a control input below to see the model respond and where its eigenvalues sit.",
+    points: [
+      "Dimensionalized the handout stability derivatives at the trim condition",
+      "Built the longitudinal and lateral-directional state-space models",
+      "Ran eigenvalue and impulse-response analysis in Python",
+      "Checked Category B flying qualities: short period ζ = 0.318 is Level I, the phugoid is slowly divergent (ζ = −0.025), Dutch roll ζ = 0.075 is slightly below Level I, roll τ = 0.334 s, and the spiral is stable with τ = 25.4 s",
+    ],
+    tools: ["Python", "NumPy", "SciPy", "Matplotlib"],
+    status: "Completed",
+    photo: {
+      name: "a7-sunset",
+      alt: "Silhouette of an A-7 Corsair II with wingtip vortex trails against a pink sunset, landing gear down over a carrier deck",
+      caption:
+        "Representative image: an A-7E Corsair II landing on USS Carl Vinson at sunset, 1988. U.S. Navy photo by PH2 Carl Duvall. Not affiliated with the U.S. Navy.",
+      position: "62% 50%",
+      textSide: "left",
+    },
+    inset: "a7a",
+    href: "https://github.com/RithvikV-Tamu/a7a-stability-analysis",
   },
   {
     id: "aircraft",
@@ -271,7 +300,7 @@ export const toolkit: ToolGroup[] = [
   {
     name: "Programming",
     tools: [
-      { name: "Python", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer", "Bearing Faults", "Organization Bot"] },
+      { name: "Python", usedIn: ["TACL", "A-7A Stability", "RS-25 Nozzle", "Heat Transfer", "Bearing Faults", "Organization Bot"] },
       { name: "MATLAB", usedIn: ["Coursework"] },
       { name: "TypeScript / React", usedIn: ["Personal Dashboard", "ETF Research", "This site"] },
       { name: "Rust", usedIn: ["Personal Dashboard"] },
@@ -282,8 +311,8 @@ export const toolkit: ToolGroup[] = [
   {
     name: "Scientific Computing",
     tools: [
-      { name: "NumPy / SciPy", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer"] },
-      { name: "Matplotlib", usedIn: ["TACL", "RS-25 Nozzle", "Heat Transfer"] },
+      { name: "NumPy / SciPy", usedIn: ["TACL", "A-7A Stability", "RS-25 Nozzle", "Heat Transfer"] },
+      { name: "Matplotlib", usedIn: ["TACL", "A-7A Stability", "RS-25 Nozzle", "Heat Transfer"] },
       { name: "HDF5", usedIn: ["TACL"] },
       { name: "scikit-learn / PyTorch", usedIn: ["Bearing Faults"] },
     ],
@@ -320,6 +349,11 @@ export const timeline = [
     title: "2023",
     heading: "NASA Gateways to Blue Skies",
     text: "Led a six-person team through a search-and-rescue drone proposal for the 2024 competition.",
+  },
+  {
+    title: "Spring 2026",
+    heading: "A-7A Stability and Control",
+    text: "Finished an individual AERO 321 analysis of the A-7A Corsair II: state-space models, eigenvalues and flying qualities.",
   },
   {
     title: "Jun 2026",

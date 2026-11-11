@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
-import { MousePointerClick } from "lucide-react"
+import { ArrowUpRight, MousePointerClick } from "lucide-react"
+import { A7aModes } from "@/components/demos/a7a-modes"
 import { AirfoilExplorer } from "@/components/demos/airfoil-explorer"
 import { BeamTurbulence } from "@/components/demos/beam-turbulence"
 import { ConopsExplorer } from "@/components/demos/conops-explorer"
@@ -95,6 +96,18 @@ function ProjectPanel({ project }: { project: FeaturedProject }) {
             {project.status && <span className="ml-1 text-xs text-white/60">{project.status}</span>}
           </div>
 
+          {project.href && (
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              className="group mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-atmosphere hover:text-white"
+            >
+              View code
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+            </a>
+          )}
+
           {project.inset && <ProjectInset project={project} />}
 
           <p className="mt-8 text-[11px] leading-relaxed text-white/50 lg:hidden">{project.photo.caption}</p>
@@ -139,6 +152,7 @@ function ProjectInset({ project }: { project: FeaturedProject }) {
       {project.inset === "beam" && <BeamTurbulence />}
       {project.inset === "conops" && <ConopsExplorer />}
       {project.inset === "airfoil" && <AirfoilExplorer />}
+      {project.inset === "a7a" && <A7aModes />}
     </div>
   )
 }
