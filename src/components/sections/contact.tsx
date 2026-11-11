@@ -3,7 +3,7 @@ import { ArrowUpRight, Check, Copy, FileText, Mail } from "lucide-react"
 import { GithubIcon, LinkedinIcon } from "@/components/brand-icons"
 import { Photo } from "@/components/photo"
 import { SectionHeading } from "@/components/section-heading"
-import { profile, sectionIntros } from "@/content/site"
+import { profile } from "@/content/site"
 
 const currentYear = new Date().getFullYear()
 
@@ -29,7 +29,7 @@ export function Contact() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/80 via-background/30 to-transparent" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 pt-40 pb-16">
-        <SectionHeading stageId="contact" title="Contact" intro={sectionIntros.contact} />
+        <SectionHeading title="Contact" />
         <ul className="grid max-w-3xl gap-3 sm:grid-cols-2">
           {profile.emails.map((email) => (
             <li key={email.address}>
@@ -41,7 +41,7 @@ export function Contact() {
               <a href={href} target="_blank" rel="noreferrer" className={cardClass}>
                 <Icon className="h-5 w-5 shrink-0 text-atmosphere" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
-                  <span className="block font-mono text-xs tracking-wider text-muted-foreground uppercase">{label}</span>
+                  <span className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</span>
                   <span className="block truncate">{text}</span>
                 </span>
                 <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
@@ -51,7 +51,7 @@ export function Contact() {
         </ul>
       </div>
 
-      <footer className="relative mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-2 px-6 pb-8 font-mono text-xs text-white/60">
+      <footer className="relative mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-2 px-6 pb-8 text-xs text-white/60">
         <span>
           © {currentYear} {profile.name}
         </span>
@@ -79,7 +79,7 @@ function EmailCard({ label, address }: { label: string; address: string }) {
     <div className={cardClass}>
       <Mail className="h-5 w-5 shrink-0 text-atmosphere" aria-hidden="true" />
       <a href={`mailto:${address}`} className="min-w-0 flex-1">
-        <span className="block font-mono text-xs tracking-wider text-muted-foreground uppercase">{label}</span>
+        <span className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</span>
         <span className="block truncate hover:underline">{address}</span>
       </a>
       <button

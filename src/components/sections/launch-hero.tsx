@@ -88,7 +88,7 @@ export function LaunchHero() {
       {shaderReady && !shaderFailed && (
         <p
           className={cn(
-            "pointer-events-none absolute inset-x-0 top-[38%] text-center font-mono text-[11px] tracking-[0.3em] text-black/60 uppercase transition-opacity duration-700 sm:top-[33%]",
+            "pointer-events-none absolute inset-x-0 top-[38%] text-center text-xs font-medium tracking-[0.24em] text-black/65 uppercase transition-opacity duration-700 sm:top-[33%]",
             hintVisible ? "opacity-100" : "opacity-0"
           )}
         >
@@ -109,7 +109,7 @@ export function LaunchHero() {
           <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/15 pt-5 lg:grid-cols-4">
             {heroFacts.map((fact, i) => (
               <div key={fact.label} className={cn(i > 1 && "hidden sm:block")}>
-                <dt className="font-mono text-[10px] tracking-[0.25em] text-sunlight uppercase">{fact.label}</dt>
+                <dt className="text-[11px] font-medium tracking-[0.18em] text-sunlight uppercase">{fact.label}</dt>
                 <dd className="mt-1 text-sm leading-snug text-white/90">{fact.detail}</dd>
               </div>
             ))}
@@ -117,12 +117,12 @@ export function LaunchHero() {
           <div className="mt-6 flex items-center justify-between gap-4">
             <a
               href="#work"
-              className="group inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.25em] text-white/80 uppercase transition-colors hover:text-white"
+              className="group inline-flex items-center gap-2 text-xs font-medium tracking-[0.18em] text-white/80 uppercase transition-colors hover:text-white"
             >
               Featured work
               <ArrowDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
             </a>
-            <p className="text-right font-mono text-[10px] text-white/40">
+            <p className="text-right text-[11px] text-white/45">
               Photo: U.S. Air Force, 2nd Lt. Samuel Eckholm. Not affiliated with the U.S. Air Force.
             </p>
           </div>

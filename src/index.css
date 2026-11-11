@@ -89,7 +89,7 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Space palette: deep black, atmospheric blue, warm sunlight accent. */
+/* Aviation palette: night-sky black, atmospheric blue, warm sunlight accent. */
 .dark {
     --background: #05070d;
     --foreground: #f1f5f9;
@@ -137,6 +137,23 @@
     }
   section[id] {
     scroll-margin-top: 4rem;
+    }
+  html.dark {
+    color-scheme: dark;
+    accent-color: var(--color-sunlight);
+    caret-color: var(--color-sunlight);
+    scrollbar-color: rgba(156, 170, 184, 0.35) var(--background);
+    }
+  ::selection {
+    background: rgba(232, 185, 122, 0.35);
+    color: #fff;
+    }
+  :focus-visible {
+    outline: 2px solid var(--color-atmosphere);
+    outline-offset: 3px;
+    }
+  a {
+    text-underline-offset: 0.2em;
     }
 }
 

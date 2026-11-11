@@ -10,12 +10,12 @@ export function Toolkit() {
 
   return (
     <section id="toolkit" className="mx-auto max-w-6xl px-6 py-28">
-      <SectionHeading stageId="toolkit" title="Toolkit" intro={sectionIntros.toolkit} />
+      <SectionHeading title="Toolkit" intro={sectionIntros.toolkit} />
       <Reveal className="grid gap-10 lg:grid-cols-[2fr_1fr]">
         <div className="grid gap-8 sm:grid-cols-2">
           {toolkit.map((group) => (
             <div key={group.name}>
-              <h3 className="mb-3 font-mono text-xs tracking-wider text-muted-foreground uppercase">{group.name}</h3>
+              <h3 className="mb-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">{group.name}</h3>
               <ul className="flex flex-wrap gap-2">
                 {group.tools.map((tool) => (
                   <li key={tool.name}>
@@ -46,8 +46,8 @@ export function Toolkit() {
         >
           {selected ? (
             <>
-              <p className="font-mono text-xs tracking-wider text-muted-foreground uppercase">Used In</p>
-              <p className="mt-1 text-xl font-semibold">{selected.name}</p>
+              <p className="text-xl font-semibold">{selected.name}</p>
+              <p className="mt-1 text-sm text-muted-foreground">Where I've used it</p>
               {selected.usedIn.length > 0 ? (
                 <ul className="mt-4 space-y-2 text-sm text-foreground/85">
                   {selected.usedIn.map((place) => (

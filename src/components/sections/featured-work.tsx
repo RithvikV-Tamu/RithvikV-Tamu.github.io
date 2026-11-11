@@ -21,10 +21,10 @@ export function FeaturedWork() {
   return (
     <section id="work">
       <div className="mx-auto max-w-6xl px-6 pt-16 pb-4">
-        <SectionHeading stageId="work" title="Featured Work" center />
+        <SectionHeading title="Featured Work" center />
       </div>
-      {featured.map((project, index) => (
-        <ProjectPanel key={project.id} project={project} index={index} />
+      {featured.map((project) => (
+        <ProjectPanel key={project.id} project={project} />
       ))}
     </section>
   )
@@ -32,7 +32,7 @@ export function FeaturedWork() {
 
 // One project: a full-width photo with slow parallax, a shaded side for the
 // text, and a caption that credits the photo and says what it shows.
-function ProjectPanel({ project, index }: { project: FeaturedProject; index: number }) {
+function ProjectPanel({ project }: { project: FeaturedProject }) {
   const panel = useRef<HTMLElement>(null)
   const reduceMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: panel, offset: ["start end", "end start"] })
@@ -65,14 +65,14 @@ function ProjectPanel({ project, index }: { project: FeaturedProject; index: num
 
       <div className="relative mx-auto w-full max-w-6xl px-6 pt-56 pb-20 lg:py-32">
         <Reveal className={cn("max-w-xl", right && "lg:ml-auto")}>
-          <p className="font-mono text-xs tracking-wider text-white/70 uppercase">
-            <span className="text-sunlight">{String(index + 1).padStart(2, "0")}</span> · {project.category}
-            {project.dates && ` · ${project.dates}`}
-          </p>
-          <h3 className="mt-3 text-3xl font-semibold tracking-tight text-balance text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.5)] sm:text-5xl">
+          <h3 className="text-3xl font-semibold tracking-tight text-balance text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.5)] sm:text-5xl">
             {project.title}
           </h3>
-          {project.role && <p className="mt-3 text-sm text-atmosphere">{project.role}</p>}
+          {project.role && <p className="mt-4 text-sm font-medium text-atmosphere">{project.role}</p>}
+          <p className={cn("text-sm text-white/65", project.role ? "mt-1" : "mt-4")}>
+            {project.category}
+            {project.dates && ` · ${project.dates}`}
+          </p>
           <p className="mt-5 text-[1.05rem] leading-relaxed text-pretty text-white/90">{project.summary}</p>
 
           {project.points.length > 0 && (
@@ -88,22 +88,22 @@ function ProjectPanel({ project, index }: { project: FeaturedProject; index: num
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             {project.tools.map((tool) => (
-              <span key={tool} className="rounded-full border border-white/20 bg-black/35 px-3 py-1 font-mono text-xs text-white/85 backdrop-blur-sm">
+              <span key={tool} className="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-xs text-white/85 backdrop-blur-sm">
                 {tool}
               </span>
             ))}
-            {project.status && <span className="ml-1 font-mono text-xs text-white/60">{project.status}</span>}
+            {project.status && <span className="ml-1 text-xs text-white/60">{project.status}</span>}
           </div>
 
           {project.inset && <ProjectInset project={project} />}
 
-          <p className="mt-8 font-mono text-[10px] leading-relaxed text-white/45 lg:hidden">{project.photo.caption}</p>
+          <p className="mt-8 text-[11px] leading-relaxed text-white/50 lg:hidden">{project.photo.caption}</p>
         </Reveal>
       </div>
 
       <p
         className={cn(
-          "pointer-events-none absolute bottom-4 hidden max-w-xs font-mono text-[10px] leading-relaxed text-white/45 lg:block",
+          "pointer-events-none absolute bottom-4 hidden max-w-xs text-[11px] leading-relaxed text-white/50 lg:block",
           right ? "left-6" : "right-6 text-right"
         )}
       >
@@ -118,7 +118,7 @@ function ProjectInset({ project }: { project: FeaturedProject }) {
     return (
       <figure className="mt-8 max-w-md overflow-hidden rounded-xl border border-white/15 bg-black/45 p-3 backdrop-blur-md">
         <img src={images[project.image.src]} alt={project.image.alt} loading="lazy" className="w-full rounded-lg" />
-        <figcaption className="mt-2 font-mono text-[11px] text-white/60">{project.image.caption}</figcaption>
+        <figcaption className="mt-2 text-xs text-white/60">{project.image.caption}</figcaption>
       </figure>
     )
   }
@@ -132,7 +132,7 @@ function ProjectInset({ project }: { project: FeaturedProject }) {
         aggie ? "border-[#8a2a2a]/70 bg-[#1a0606]/75" : "border-white/15 bg-black/55"
       )}
     >
-      <p className={cn("mb-2 flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase", aggie ? "text-[#e0b0b0]" : "text-sunlight")}>
+      <p className={cn("mb-3 flex items-center gap-2 text-[11px] font-medium tracking-[0.18em] uppercase", aggie ? "text-[#e0b0b0]" : "text-sunlight")}>
         <MousePointerClick className="h-3.5 w-3.5" aria-hidden="true" />
         {touch ? "Tap around" : "Click around"}
       </p>

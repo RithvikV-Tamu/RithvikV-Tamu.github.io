@@ -49,7 +49,6 @@ export const stages = [
 export const sectionIntros = {
   more: "Smaller projects: solvers, machine learning and tools I built for myself.",
   toolkit: "Hover or tap a tool to see where I've used it.",
-  contact: "The fastest way to reach me is below.",
 }
 
 // Short facts shown in the data strip along the bottom of the hero.
@@ -216,15 +215,11 @@ export const conopsSteps = [
   { label: "Return to PI", detail: "The carrier is reloaded, reenters, splashes down and goes back to the researchers." },
 ]
 
-export type MoreIcon = "nozzle" | "heat" | "wave" | "bot" | "dashboard" | "chart"
-
 export interface MoreProject {
   name: string
   meta: string
   description: string
-  icon: MoreIcon
   href?: string
-  size: "wide" | "normal"
 }
 
 export const moreWork: MoreProject[] = [
@@ -232,50 +227,38 @@ export const moreWork: MoreProject[] = [
     name: "RS-25 Nozzle Solver",
     meta: "Python · Compressible Flow",
     description:
-      "Solves 1-D isentropic flow through an approximate RS-25 nozzle with the area-Mach relation and Brent root finding, then compares the results with public RS-25 data.",
-    icon: "nozzle",
+      "Solves 1-D isentropic flow through an approximate RS‑25 nozzle with the area-Mach relation and Brent root finding, then compares the results with public RS‑25 data.",
     href: "https://github.com/RithvikV-Tamu/rs25-nozzle-solver",
-    size: "wide",
   },
   {
     name: "Heat Transfer Solvers",
     meta: "Python · Numerical Methods",
     description:
       "1-D conduction with finite differences (2nd and 4th order) and finite elements (p=1, p=2), checked with Richardson convergence studies.",
-    icon: "heat",
     href: "https://github.com/RithvikV-Tamu/heat-transfer-solvers",
-    size: "normal",
   },
   {
     name: "Bearing Fault Classification",
     meta: "Python · Machine Learning",
     description:
       "Sorts bearing vibration data into normal and three fault types using FFT features, logistic regression and a PyTorch neural network.",
-    icon: "wave",
     href: "https://github.com/RithvikV-Tamu/bearing-fault-classification",
-    size: "normal",
   },
   {
     name: "Organization Bot",
     meta: "Python · Automation",
     description:
       "Turns my capstone team's Discord chat into a shared Google Sheets task tracker. A local AI model reads the messages, and manual edits are never overwritten.",
-    icon: "bot",
-    size: "wide",
   },
   {
     name: "Personal Dashboard",
     meta: "Tauri · React · Rust",
     description: "A private Windows app for my classes, exams, calendar, mail, sports and news.",
-    icon: "dashboard",
-    size: "normal",
   },
   {
     name: "ETF Research",
     meta: "Next.js · TypeScript",
     description: "A private ETF research tool with a scanner and watchlist that I use daily, including on my phone.",
-    icon: "chart",
-    size: "wide",
   },
 ]
 
@@ -352,5 +335,6 @@ export const timeline = [
     title: "May 2027",
     heading: "Graduation",
     text: "B.S. in Aerospace Engineering from Texas A&M.",
+    upcoming: true,
   },
 ]
