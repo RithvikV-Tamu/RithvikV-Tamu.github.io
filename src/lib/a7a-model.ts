@@ -1,38 +1,43 @@
-// Linearized A-7A Corsair II models from my AERO 321 report (Spring 2026):
-// 15,000 ft, Mach 0.6, trim alpha 4 deg. Matrices copied from eqs. 33, 34,
-// 41 and 42. Angles in rad, rates in rad/s, u in ft/s.
+// Linearized A-7A Corsair II models from my AERO 321 project (Spring 2026):
+// 15,000 ft, Mach 0.6, trim alpha 4 deg. Stability axes throughout. These are
+// the corrected, consistent matrices: the submitted report mixed body and
+// stability axes. Angles in rad, rates in rad/s, u in ft/s.
 
 import type { Matrix } from "@/lib/state-space"
 
-// States [u, alpha, q, theta], input elevator.
-export const A_LON: Matrix = [
-  [0.00063, 20.268177, 0.139873, -32.095626],
-  [-0.000035, -1.161652, 0.996847, -0.003538],
-  [0.001047, -8.87968, -0.82517, 0.000468],
-  [0, 0, 1, 0],
-]
-export const B_LON = [13.778023, -0.153142, -18.832025, 0]
+// Every longitudinal number in one place, so the whole model swaps at once.
+// States [u, alpha, q, theta], input elevator. mq is the pitch damping
+// derivative Mq (1/s), used by the what-if slider. Seven significant figures:
+// the phugoid is sensitive to rounding in the small u and alpha terms.
+export const LONGITUDINAL_MODEL: { a: Matrix; b: number[]; mq: number } = {
+  a: [
+    [-0.0009413927, -31.18776, 0, -32.174],
+    [-0.0000354494, -1.161051, 0.9968392, 0],
+    [0.001047395, -8.879759, -0.8251692, 0],
+    [0, 0, 1, 0],
+  ],
+  b: [6.967478, -0.1542838, -18.83187, 0],
+  mq: -0.6932682,
+}
 
 // States [beta, p, r, phi], inputs [aileron, rudder].
 export const A_LAT: Matrix = [
-  [-0.186971, 0, -1.0, 0.050593],
-  [-27.078927, -2.613645, 0.857828, 0],
-  [3.673165, -0.113467, -0.554338, 0],
-  [0, 1.0, 0.069927, 0],
+  [-0.186971, 0, -1.0, 0.050716],
+  [-28.496874, -2.619285, 1.025548, 0],
+  [5.195225, 0.032806, -0.60315, 0],
+  [0, 1.0, 0, 0],
 ]
-export const B_LAT_AILERON = [-0.006537, 17.865166, 1.147323, 0]
-export const B_LAT_RUDDER = [0.054915, 5.168572, -5.75574, 0]
+export const B_LAT_AILERON = [-0.006537, 17.799491, 0.148003, 0]
+export const B_LAT_RUDDER = [0.054915, 6.856455, -6.053122, 0]
 
-// Pitch damping derivative Mq from Table 2 (1/s). In A_LON[2][2] it adds to the
-// M_alpha_dot term, so scaling Mq alone shifts that entry by (k - 1) * Mq.
-export const MQ = -0.693268
+// Yaw damping derivative r_r (1/s). It is A_LAT[2][2] exactly.
+export const RR = -0.60315
 
-// Yaw damping r_r from Table 3 (1/s). It is A_LAT[2][2] exactly.
-export const RR = -0.554338
-
+// In a[2][2], Mq adds to the M_alpha_dot term, so scaling Mq alone shifts
+// that entry by (k - 1) * Mq.
 export function longitudinal(mqScale: number): Matrix {
-  const a = A_LON.map((row) => row.slice())
-  a[2][2] += (mqScale - 1) * MQ
+  const a = LONGITUDINAL_MODEL.a.map((row) => row.slice())
+  a[2][2] += (mqScale - 1) * LONGITUDINAL_MODEL.mq
   return a
 }
 

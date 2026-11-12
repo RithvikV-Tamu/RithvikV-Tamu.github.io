@@ -1,11 +1,11 @@
 import { useId, useMemo, useState } from "react"
-import { B_LAT_AILERON, B_LAT_RUDDER, B_LON, lateral, longitudinal } from "@/lib/a7a-model"
+import { B_LAT_AILERON, B_LAT_RUDDER, LONGITUDINAL_MODEL, lateral, longitudinal } from "@/lib/a7a-model"
 import { eigenvalues, impulseResponse, modal, type Complex, type Matrix } from "@/lib/state-space"
 import { cn } from "@/lib/utils"
 
 // Pick a control input to see the A-7A respond to an impulse, and where that
 // model's eigenvalues sit in the S-plane. Everything is computed live from the
-// state-space matrices in my AERO 321 report. The slider is a what-if: it
+// corrected stability-axis matrices from my AERO 321 project. The slider is a what-if: it
 // scales one damping derivative and the roots move with it.
 
 type InputKey = "elevator" | "aileron" | "rudder"
@@ -19,7 +19,7 @@ interface Trace {
 const INPUTS: Record<InputKey, { label: string; b: number[]; duration: number; traces: [Trace, Trace] }> = {
   elevator: {
     label: "Elevator",
-    b: B_LON,
+    b: LONGITUDINAL_MODEL.b,
     duration: 120,
     traces: [
       { label: "α", unit: "deg", state: 1 },
@@ -350,8 +350,8 @@ export function A7aModes() {
         )}
       </div>
       <p className="mt-2 text-[10px] leading-relaxed text-white/50">
-        Linear small-disturbance model from my report. Derivatives from the course aircraft handout. The slider is a what-if on that linear model, not a
-        result from the report.
+        Linear small-disturbance model (stability axes), corrected from my course report. Derivatives from the course aircraft handout. The slider is a
+        what-if on that linear model, not a result from the report.
       </p>
     </div>
   )
